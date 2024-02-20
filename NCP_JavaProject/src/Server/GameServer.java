@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import BingoGame.Bingo;
+import bingoGame.BingoGame;
 import liarGame.LiarGame;
 
 public class GameServer {
@@ -25,7 +25,7 @@ public class GameServer {
 		clientIds = new HashMap<>();
 		games = new HashMap<String, Game>();
 		games.put("liar", new LiarGame());
-		games.put("bingo", new Bingo());
+		games.put("bingo", new BingoGame());
 
 	}
 

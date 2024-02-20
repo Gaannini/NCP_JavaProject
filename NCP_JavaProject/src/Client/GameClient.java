@@ -8,7 +8,7 @@ import java.net.Socket;
 
 public class GameClient {
 	public static void main(String[] args) {
-		String server = "127.0.0.1";
+		String server = "192.168.0.158";
 		int serverPort = 12345;
 
 		try {
