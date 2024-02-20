@@ -1,8 +1,8 @@
 package Server;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -11,95 +11,120 @@ import java.util.List;
 import java.util.Map;
 
 import BingoGame.Bingo;
-import Client.ClientHandler;
 import liarGame.LiarGame;
 
 public class GameServer {
 	private Map<String, List<Socket>> gameClients; // 클라이언트들의 소켓을 저장하는 리스트
+	private Map<Socket, String> clientIds; // 클라이언트별 아이디를 저장하는 맵
 	private Map<String, Game> games;// 게임이름과 해당 게임을 매핑하는 맵
+	private ServerSocket serverSocket; // 서버 소켓.
+	private Socket clientsocket; // 클라이언트가 접속하면 새로 만드는 소켓
 
 	public GameServer() {
 		gameClients = new HashMap<>();
+		clientIds = new HashMap<>();
 		games = new HashMap<String, Game>();
 		games.put("liar", new LiarGame());
 		games.put("bingo", new Bingo());
+
 	}
 
 	// 게임서버를 시작하는 메소드
 	public void startServer(int port) {
 		try {
-			ServerSocket serverSocket = new ServerSocket(port);
+			serverSocket = new ServerSocket(port);
 			System.out.println("서버 시작. port : " + port + "...");
 
 			while (true) {
-				Socket clientSocket = serverSocket.accept();
-				System.out.println("클라이언트 연결 : " + clientSocket);
+				clientsocket = serverSocket.accept(); // 서버의 접속을 대기중
+				System.out.println("클라이언트 연결 : " + clientsocket);
 
 				// 클라이언트 처리를 위한 쓰레드 시작
-				ClientHandler clientHandler = new ClientHandler(clientSocket, this);
-				clientHandler.start();
+				clientInfo CI = new clientInfo(clientsocket);
+				CI.start();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			System.out.println("게임서버 연결안됨.");
 		}
 	}
 
-	// 클라이언트 소켓을 제거하는 메소드
-	public synchronized void removeClientSocket(Socket socket) {
-		for (List<Socket> clients : gameClients.values()) {
-			clients.remove(socket);
+	public class clientInfo extends Thread {
+		private Socket socket; // 클라이언트 소켓을 받아서 사용하는 변수
+		public PrintWriter writer; // 쓰기 버퍼.
+		private BufferedReader reader; // 읽기 버퍼.
+		public String clientId; // 클라이언트 아이디를 담는 변수.
+		public String gamename; // 클라이언트가 선택한 게임 이름
+
+		public clientInfo(Socket socket) {
+			this.socket = socket;
+		}
+
+		@Override
+		public void run() {
+			try {
+				reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				writer = new PrintWriter(socket.getOutputStream(), true);
+
+				String clientMsg;
+				while ((clientMsg = reader.readLine()) != null) {
+					String[] parsedMsg = clientMsg.split("&");
+					// Client Thread에서 동작하는 프로토콜
+					handleProtocol(parsedMsg);
+
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		private void handleProtocol(String[] parsedMsg) {
+			if (parsedMsg.length >= 2) {
+				String protocol = parsedMsg[0];
+				String data = parsedMsg[1];
+
+				switch (protocol) {
+				case "ID":
+					clientId = data;
+					clientIds.put(socket, clientId);
+					notifyClients(clientId + " is enter the room.", "ID");
+					// sendClientList();
+					break;
+				case "gamename":
+					startGame(data);
+					break;
+				// Handle other protocols
+				}
+			}
+		}
+	}
+
+	// 정보 ㄹ공지,,,?
+	private void notifyClients(String message, String protocol) {
+		for (Map.Entry<String, List<Socket>> entry : gameClients.entrySet()) {
+			List<Socket> clientSockets = entry.getValue();
+			for (Socket clientSocket : clientSockets) {
+				try {
+					PrintWriter clientWriter = new PrintWriter(clientSocket.getOutputStream(), true);
+					clientWriter.println("SERVER&" + message);
+					clientWriter.println(protocol + "&");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
 	// 사용자가 선택한 게임 시작 메소드
-	public void startGame(Socket socket, String gameName) {
+	public void startGame(String gameName) {
 		Game selectedGame = games.get(gameName.toLowerCase());
 		if (selectedGame != null) {
-			selectedGame.start(socket); // 게임실행
-
-			// 해당게임에 플레이어 저장..?
+			selectedGame.start(clientsocket);
 			List<Socket> clients = gameClients.computeIfAbsent(gameName, k -> new ArrayList<>());
-			clients.add(socket);
+			clients.add(clientsocket);
 		} else {
 			System.out.println("게임이름을 잘못입력하셨습니다.");
 		}
 	}
-	
-	
-	public static void main1(String[] args) {
-	    GameServer gameServer = new GameServer();
-	    gameServer.startServer(12345);
-
-	    try {
-	        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-	        while (true) {
-	            System.out.println("게임을 선택하세요:");
-	            System.out.println("1. Liar Game");
-	            System.out.println("2. Bingo Game");
-	            System.out.print("번호 입력: ");
-	            String choice = reader.readLine().trim();
-	            
-	            switch (choice) {
-	                case "1":
-	                    // 클라이언트 소켓을 생성하여 Liar Game 시작 메소드에 전달합니다.
-	                    Socket liarSocket = new Socket("127.0.0.1", 12345);
-	                    gameServer.startGame(liarSocket, "liar");
-	                    break;
-	                case "2":
-	                    // 클라이언트 소켓을 생성하여 Bingo Game 시작 메소드에 전달합니다.
-	                    Socket bingoSocket = new Socket("127.0.0.1", 12345);
-	                    gameServer.startGame(bingoSocket, "bingo");
-	                    break;
-	                default:
-	                    System.out.println("잘못된 입력입니다. 다시 시도하세요.");
-	            }
-	        }
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
-	}
-
-
 
 	public static void main(String[] args) {
 		GameServer gameServer = new GameServer();
