@@ -1,1 +1,6 @@
 /bin/
+/.metadata/
+/.recommenders
+.gitignore
+.settings/
+*.class
