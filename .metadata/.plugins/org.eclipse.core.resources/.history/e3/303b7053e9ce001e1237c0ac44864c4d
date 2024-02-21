@@ -1,0 +1,14 @@
+package Server;
+
+public class Player {
+	public int id;
+	public String name;
+	
+	public Player(String name) {
+		this.name = name;
+		this.id = 0;
+	}
+	public void nextId() {
+		id++;
+	}
+}

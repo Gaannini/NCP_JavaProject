@@ -1,0 +1,6 @@
+package liarGame;
+
+public class LiarPlayer extends Server.Player{
+	String name;
+	boolean IsLiar;
+}

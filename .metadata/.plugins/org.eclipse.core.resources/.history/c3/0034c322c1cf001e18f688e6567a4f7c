@@ -1,0 +1,38 @@
+package liarGame;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import java.awt.BorderLayout;
+
+public class LiarClient {
+
+	private JFrame frame;
+
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					LiarClient window = new LiarClient();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	public LiarClient() {
+		initialize();
+	}
+
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 450, 300);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		JLabel lblNewLabel = new JLabel("Liargame");
+		frame.getContentPane().add(lblNewLabel, BorderLayout.NORTH);
+	}
+}

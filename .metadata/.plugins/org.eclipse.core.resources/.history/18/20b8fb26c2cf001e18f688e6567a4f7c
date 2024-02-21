@@ -1,0 +1,10 @@
+package Client;
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+
+public class GameClientGUI extends JFrame {
+}

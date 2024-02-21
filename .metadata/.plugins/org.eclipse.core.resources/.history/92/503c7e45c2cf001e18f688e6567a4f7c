@@ -1,0 +1,54 @@
+package Client;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+public class GameClientGUI extends JFrame {
+	public GameStart() {
+        // JFrame의 제목 설정
+        setTitle("게임 시작");
+
+        // JFrame의 크기 설정
+        setSize(400, 300);
+
+        // JFrame이 닫힐 때의 동작 설정
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // 텍스트가 있는 JLabel 생성
+        JLabel label = new JLabel("게임에 오신 것을 환영합니다!");
+
+        // JButton 생성
+        JButton button = new JButton("게임 시작");
+
+        // JButton에 ActionListener 추가
+        button.addActionListener(e -> {
+            // 버튼이 클릭될 때 실행할 작업
+            JOptionPane.showMessageDialog(this, "게임을 시작합니다...");
+        });
+
+        // 컴포넌트들을 담을 JPanel 생성
+        JPanel panel = new JPanel();
+
+        // JLabel과 JButton을 패널에 추가
+        panel.add(label);
+        panel.add(button);
+
+        // 패널을 JFrame에 추가
+        add(panel);
+
+        // JFrame을 화면 중앙에 배치
+        setLocationRelativeTo(null);
+
+        // JFrame을 보이게 설정
+        setVisible(true);
+    }
+
+	public static void main(String[] args) {
+		// GameStart JFrame의 인스턴스 생성
+		SwingUtilities.invokeLater(GameStart::new);
+	}
+}

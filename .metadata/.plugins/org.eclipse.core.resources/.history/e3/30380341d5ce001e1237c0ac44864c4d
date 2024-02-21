@@ -1,0 +1,11 @@
+package Server;
+
+public class Player {
+	private int id;
+	private String name;
+	
+	public Player(String name) {
+		this.name = name;
+		this.id = 0;
+	}
+}

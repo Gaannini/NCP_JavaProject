@@ -1,0 +1,18 @@
+package liarGame;
+
+import java.net.Socket;
+import java.util.List;
+
+import Server.Game;
+
+public class LiarGame implements Game {
+	public List<Socket> liarClients;
+
+	public LiarGame() {
+	}
+
+	@Override
+	public void start(Socket socket) {
+		System.out.println("라이어게임을 선택하셧");
+	}
+}

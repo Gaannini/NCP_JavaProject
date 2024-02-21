@@ -1,0 +1,91 @@
+import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+public class GameClientGUI extends JFrame {
+	private Socket socket;
+	private PrintWriter outputWriter;
+	private BufferedReader inputReader;
+	private JTextField nicknameField;
+	private JButton startButton;
+
+	public GameClientGUI() {
+		setTitle("게임 시작");
+		setSize(400, 200);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		JPanel panel = new JPanel(new FlowLayout());
+
+		nicknameField = new JTextField(20);
+		startButton = new JButton("게임 시작");
+		startButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String nickname = nicknameField.getText();
+				if (nickname.isEmpty()) {
+					JOptionPane.showMessageDialog(GameClientGUI.this, "닉네임을 입력하세요.");
+					return;
+				}
+
+				try {
+					outputWriter.println("ID&" + nickname); // 서버에 닉네임 전송
+
+					// 선택한 게임 이름을 서버에 전송
+					String gameName = showGameSelectionDialog();
+					outputWriter.println("gamename&" + gameName); // 서버에 게임 이름 전송
+
+					System.out.println("당신의 닉네임은 '" + nickname + "' 이고 선택한 게임은 '" + gameName + "' 입니다.");
+
+					// 서버로부터의 응답 출력
+					String serverResponse;
+					while ((serverResponse = inputReader.readLine()) != null) {
+						System.out.println("Server: " + serverResponse);
+					}
+
+					// 입력 스트림과 소켓 닫기
+					inputReader.close();
+					outputWriter.close();
+					socket.close();
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+
+		panel.add(nicknameField);
+		panel.add(startButton);
+		getContentPane().add(panel);
+
+		setLocationRelativeTo(null);
+		setVisible(true);
+	}
+
+	private String showGameSelectionDialog() {
+		// 여기에 세 개의 게임 중 하나를 선택하는 대화 상자를 표시하는 코드를 작성하세요.
+		// 사용자가 선택한 게임 이름을 반환하세요.
+		return "selected_game_name"; // 임시로 선택한 게임 이름 반환
+	}
+
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					GameClientGUI window = new GameClientGUI();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+}

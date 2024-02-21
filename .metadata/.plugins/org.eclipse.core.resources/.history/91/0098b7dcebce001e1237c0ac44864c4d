@@ -1,0 +1,41 @@
+package Client;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
+public class GameClient {
+	public static void main(String[] args) {
+		String server = "127.0.0.1";
+		int serverPort = 12345;
+
+		try {
+			Socket socket = new Socket(server, serverPort);
+			System.out.println("Connected to server.");
+			
+			// 사용자로부터 닉네임 입력 받기
+            System.out.print("닉네임을 입력하세요 >> ");
+            BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+            String nickname = bf.readLine();
+
+            // 닉네임 서버에 전송
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+            objectOutputStream.writeObject(nickname); // 닉네임 전송
+			
+			
+			// 선택한 게임 이름을 서버에 전송
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+			System.out.print("게임을 선택하세요 >> ");
+			BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+			String gamename = bf.readLine();
+			objectOutputStream.writeObject(gamename); // 게임 선택
+
+			socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+}

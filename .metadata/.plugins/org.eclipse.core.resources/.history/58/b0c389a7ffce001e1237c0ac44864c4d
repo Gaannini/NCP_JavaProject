@@ -1,0 +1,110 @@
+import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import Client.GameClient;
+
+public class Nickname {
+	private JFrame frame;
+	private JTextField Nickname;
+	String getNickname;
+	private JLabel NicknameLabel; // 닉네임을 표시할 레이블
+	private JPanel InputNickname; // 닉네임 입력 패널
+	private JPanel GameMain; // 게임 메인 패널
+
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Nickname window = new Nickname();
+					window.frame.setVisible(true);
+					GameClient gameClient = new GameClient();
+					Thread clientThread = new Thread((Runnable) gameClient);
+					clientThread.start();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public Nickname() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 450, 300);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+
+		// 닉네임 입력 패널
+		JPanel InputNickname = new JPanel();
+		InputNickname.setBounds(0, 0, 450, 450);
+		frame.getContentPane().add(InputNickname);
+		InputNickname.setLayout(null);
+
+		System.out.println("start");
+		JLabel label = new JLabel("닉네임을 입력하세요.");
+		label.setBounds(151, 51, 139, 16);
+		InputNickname.add(label);
+
+		// nickname입력
+		Nickname = new JTextField();
+		Nickname.setBounds(160, 97, 130, 26);
+		InputNickname.add(Nickname);
+		Nickname.setColumns(10);
+
+		JButton enter = new JButton("입장");
+		enter.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+
+			}
+		});
+		enter.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				getNickname = Nickname.getText();
+				System.out.println(getNickname);
+				InputNickname.setVisible(false);
+				// 게임 메인 패널에 닉네임 레이블 업데이트
+				NicknameLabel.setText(getNickname + "님 환영합니다.");
+				GameMain.setVisible(true); // 게임 메인 패널 보이기
+			}
+		});
+		enter.setBounds(173, 153, 100, 30);
+		InputNickname.add(enter);
+
+		// 2
+		JPanel GameMain = new JPanel();
+		GameMain.setBounds(0, 0, 450, 450);
+		frame.getContentPane().add(GameMain);
+
+		JButton liarbtn = new JButton("LiarGame");
+		liarbtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		liarbtn.setBounds(150, 130, 100, 30);
+		GameMain.add(liarbtn);
+
+		NicknameLabel = new JLabel("");
+
+		NicknameLabel.setBounds(235, 73, 100, 16);
+		GameMain.add(NicknameLabel);
+	}
+}

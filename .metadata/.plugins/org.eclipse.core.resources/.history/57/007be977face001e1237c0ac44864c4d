@@ -1,0 +1,67 @@
+import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class GamePanel {
+
+	private JFrame frame;
+	private String nickname;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					GamePanel window = new GamePanel();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 * 
+	 * @param getNickname
+	 */
+	public GamePanel(String getNickname) {
+		this.nickname = getNickname;
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 450, 450);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+
+		JPanel panel = new JPanel();
+		panel.setBounds(0, 0, 450, 450);
+		frame.getContentPane().add(panel);
+		panel.setLayout(null);
+
+		JButton liarbtn = new JButton("LiarGame");
+		liarbtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		liarbtn.setBounds(150, 130, 100, 30);
+		panel.add(liarbtn);
+
+		JLabel lblNewLabel = new JLabel(nickname + "님 환영합니다.");
+		lblNewLabel.setBounds(235, 73, 100, 16);
+		panel.add(lblNewLabel);
+	}
+}

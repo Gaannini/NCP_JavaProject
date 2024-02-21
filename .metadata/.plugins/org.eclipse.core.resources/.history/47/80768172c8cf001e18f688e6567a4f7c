@@ -1,0 +1,72 @@
+package Client;
+
+import java.awt.TextField;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+public class GameClientGUI extends JFrame {
+	// 통신
+	private Socket socket;
+	private PrintWriter writer;
+	private BufferedReader reader;
+
+	// plMain에 포함됨
+	private JButton btnStart; // 아이디 입력 후 게임시작 버튼
+
+	// plId에 포함됨
+	private JLabel IDlabel; // '아이디를 입력하세요'라벨
+	private TextField IDinput; // 아이디 입력
+	private JButton GameStartbutton;
+
+	public GameClientGUI() {
+		// JFrame의 제목 설정
+		setTitle("게임 시작");
+
+		// JFrame의 크기 설정
+		setSize(400, 600);
+
+		// JFrame이 닫힐 때의 동작 설정
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		// 게임 첫 화면에 필요한 ....
+		JLabel Welcome = new JLabel("게임에 오신 것을 환영합니다!");
+		IDlabel = new JLabel("아이디를 입력하세요");
+		IDinput = new TextField();
+		GameStartbutton = new JButton("게임 시작");
+
+		GameStartbutton.addActionListener(e -> {
+			JOptionPane.showMessageDialog(this, "게임을 시작합니다...");
+		});
+
+		// 컴포넌트들을 담을 JPanel 생성
+		JPanel startJPanel = new JPanel(); // 게임 시작패널(아이디입력)
+
+		// JLabel과 JButton을 패널에 추가
+		startJPanel.add(Welcome);
+		startJPanel.add(IDlabel);
+		startJPanel.add(IDinput);
+		startJPanel.add(GameStartbutton);
+
+		// 패널을 JFrame에 추가
+		getContentPane().add(startJPanel);
+
+		// JFrame을 화면 중앙에 배치
+		setLocationRelativeTo(null);
+
+		// JFrame을 보이게 설정
+		setVisible(true);
+	}
+
+	public static void main(String[] args) {
+		// GameStart JFrame의 인스턴스 생성
+		SwingUtilities.invokeLater(GameClientGUI::new);
+	}
+}

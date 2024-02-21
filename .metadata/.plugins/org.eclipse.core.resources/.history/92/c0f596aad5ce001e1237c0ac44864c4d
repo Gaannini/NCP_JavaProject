@@ -1,0 +1,6 @@
+package liarGame;
+
+public class Player {
+	String name;
+	boolean IsLiar;
+}

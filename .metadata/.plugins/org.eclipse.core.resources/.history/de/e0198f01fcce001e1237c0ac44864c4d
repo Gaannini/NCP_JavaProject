@@ -1,0 +1,86 @@
+import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+public class Nickname {
+
+	private JFrame frame;
+	private JTextField Nickname;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Nickname window = new Nickname();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public Nickname() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 450, 300);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+
+		JPanel InputNickname = new JPanel();
+		InputNickname.setBounds(0, 0, 450, 450);
+		frame.getContentPane().add(InputNickname);
+		InputNickname.setLayout(null);
+
+		System.out.println("start");
+		JLabel label = new JLabel("닉네임을 입력하세요.");
+		label.setBounds(151, 51, 139, 16);
+		InputNickname.add(label);
+
+		// nickname입력
+		Nickname = new JTextField();
+		Nickname.setBounds(160, 97, 130, 26);
+		InputNickname.add(Nickname);
+		Nickname.setColumns(10);
+
+		JButton liarbtn = new JButton("입장");
+		liarbtn.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+
+			}
+		});
+		liarbtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String getNickname = Nickname.getText();
+				GamePanel gp = new GamePanel(getNickname);
+			}
+		});
+		liarbtn.setBounds(173, 153, 100, 30);
+		InputNickname.add(liarbtn);
+		
+		JPanel GameMain = new JPanel();
+		GameMain.setBounds(0, 0, 450, 272);
+		frame.getContentPane().add(GameMain);
+	}
+}

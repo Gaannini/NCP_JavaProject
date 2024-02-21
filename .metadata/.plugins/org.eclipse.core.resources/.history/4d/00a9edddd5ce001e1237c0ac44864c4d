@@ -1,0 +1,15 @@
+package liarGame;
+
+public class LiarPlayer extends Server.Player{
+	boolean isLiar;
+	
+	public LiarPlayer(String name) {
+		super(name);
+		isLiar = false;
+	}
+	
+	public void LiarSelect() {
+		isLiar = true;
+		
+	}
+}

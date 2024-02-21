@@ -1,0 +1,9 @@
+/**
+ * 
+ */
+/**
+ * 
+ */
+module NCP_JavaProject {
+	requires java.desktop;
+}

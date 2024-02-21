@@ -1,0 +1,14 @@
+package liarGame;
+
+public class LiarPlayer {
+	boolean isLiar;
+
+	public LiarPlayer(String name) {
+		super(name);
+		isLiar = false;
+	}
+
+	public void LiarSelect() {
+		isLiar = true;
+	}
+}

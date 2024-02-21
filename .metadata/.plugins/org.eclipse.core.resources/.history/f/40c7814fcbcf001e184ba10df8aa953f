@@ -1,0 +1,19 @@
+package liarGame;
+
+import java.net.Socket;
+import java.util.List;
+
+import Server.Game;
+
+public class LiarServer implements Game {
+	private List<Socket> liarClients;
+
+	@Override
+	public void start(Socket socket) {
+	}
+
+	public void addLiarClient(Socket socket) {
+		liarClients.add(socket);
+	}
+
+}

@@ -1,0 +1,32 @@
+package Client;
+
+import java.awt.EventQueue;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import java.awt.BorderLayout;
+
+public class GameClientGUI extends JFrame{
+	private JPanel startJPanel;
+	private JLabel WelcomeMsg;
+	private JLabel IdinputMsg;
+	private JTextField IdinputField;
+	private JButton gameStartBtn;
+	
+	private void init() {
+		startJPanel = new JPanel();
+	WelcomeMsg = new JLabel();
+	IdinputMsg = new JLabel();
+	IdinputField = new JTextField();
+	gameStartBtn = new JButton();
+	}
+	
+	
+	
+	
+
+}

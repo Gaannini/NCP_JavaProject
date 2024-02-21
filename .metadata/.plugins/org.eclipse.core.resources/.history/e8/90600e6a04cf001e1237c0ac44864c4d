@@ -1,0 +1,9 @@
+package liarGame;
+
+public class LiarPlayer {
+	boolean isLiar;
+
+	public void LiarSelect() {
+		isLiar = true;
+	}
+}
