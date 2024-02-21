@@ -1,139 +1,189 @@
 package omokGame;
 
+import java.awt.Container;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.Socket;
-import java.util.Scanner;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import Server.Game;
-public class OmokGame implements Game{
+
+public class OmokGame extends JFrame implements Game {
 	
+
 	@Override
 	public void start(Socket socket) {
-		System.out.println("===오목게임 시작===");
+		OmokBoard();
+		OmokGame.main(null);
+	}
+	GoEgg goEgg[][];
+	ImageIcon img = new ImageIcon("images//empty.png");
+	ImageIcon white = new ImageIcon("images//white.png");
+	ImageIcon black = new ImageIcon("images//black.png");
+	ImageIcon turn = black;
+
+	public OmokGame() {
 		
 	}
-	
-	
-    private static final int SIZE = 15;
-    private static final int EMPTY = 0;
-    private static final int BLACK = 1;
-    private static final int WHITE = 2;
-    
-    private int[][] board;
-    private boolean blackTurn; // true면 흑돌 차례, false면 백돌 차례
-    
-    public OmokGame() {
-        board = new int[SIZE][SIZE];
-        blackTurn = true;
-    }
-    
-    public void printBoard() {
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                if (board[i][j] == EMPTY) {
-                    System.out.print(". ");
-                } else if (board[i][j] == BLACK) {
-                    System.out.print("● ");
-                } else if (board[i][j] == WHITE) {
-                    System.out.print("○ ");
-                }
-            }
-            System.out.println();
-        }
-    }
-    
-    public boolean placeStone(int x, int y) {
-        if (x < 0 || x >= SIZE || y < 0 || y >= SIZE || board[y][x] != EMPTY) {
-            return false; // 잘못된 위치에 돌을 놓을 경우 false 반환
-        }
-        
-        if (blackTurn) {
-            board[y][x] = BLACK;
-        } else {
-            board[y][x] = WHITE;
-        }
-        
-        blackTurn = !blackTurn; // 플레이어 차례 변경
-        return true; // 돌을 성공적으로 놓았을 경우 true 반환
-    }
-    
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        OmokGame game = new OmokGame();
-        
-        while (true) {
-            game.printBoard();
-            
-            int player = game.blackTurn ? BLACK : WHITE;
-            String playerName = game.blackTurn ? "흑돌" : "백돌";
-            
-            System.out.println(playerName + "의 차례입니다. 돌을 놓을 위치를 입력하세요 (x y): ");
-            int x = scanner.nextInt();
-            int y = scanner.nextInt();
-            
-            if (game.placeStone(x, y)) {
-                if (game.checkWin(player, x, y)) {
-                    game.printBoard();
-                    System.out.println(playerName + "이(가) 승리했습니다!");
-                    break;
-                }
-            } else {
-                System.out.println("잘못된 위치입니다. 다시 입력해주세요.");
-            }
-        }
-        
-        scanner.close();
-    }
-    
-    // 승리 조건 확인 메서드 (가로, 세로, 대각선)
-    public boolean checkWin(int player, int x, int y) {
-        int count = 1;
-        
-        // 가로 방향 체크
-        count += countStones(player, x, y, 1, 0); // 오른쪽
-        count += countStones(player, x, y, -1, 0); // 왼쪽
-        
-        if (count >= 5) {
-            return true;
-        }
-        
-        // 세로 방향 체크
-        count = 1;
-        count += countStones(player, x, y, 0, 1); // 아래
-        count += countStones(player, x, y, 0, -1); // 위
-        
-        if (count >= 5) {
-            return true;
-        }
-        
-        // 대각선 방향 체크
-        count = 1;
-        count += countStones(player, x, y, 1, 1); // 오른쪽 아래
-        count += countStones(player, x, y, -1, -1); // 왼쪽 위
-        
-        if (count >= 5) {
-            return true;
-        }
-        
-        count = 1;
-        count += countStones(player, x, y, 1, -1); // 오른쪽 위
-        count += countStones(player, x, y, -1, 1); // 왼쪽 아래
-        
-        return count >= 5;
-    }
-    
-    // 특정 방향으로 연속된 돌의 개수를 세는 메서드
-    public int countStones(int player, int x, int y, int dx, int dy) {
-        int count = 0;
-        while (true) {
-            x += dx;
-            y += dy;
-            if (x < 0 || x >= SIZE || y < 0 || y >= SIZE || board[y][x] != player) {
-                break;
-            }
-            count++;
-        }
-        return count;
-    }
+	public void OmokBoard() {
+		setTitle("===오목게임===");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		Container c = getContentPane();
+		c.setLayout(new GridLayout(26, 26));
+
+		goEgg = new GoEgg[26][];
+
+		myActionListener goAction = new myActionListener();
+		for (int i = 0; i < 26; i++) {
+			goEgg[i] = new GoEgg[26];
+			for (int j = 0; j < 26; j++) {
+				goEgg[i][j] = new GoEgg(i, j, img);
+				c.add(goEgg[i][j]);
+				goEgg[i][j].addActionListener(goAction);
+				goEgg[i][j].setBorderPainted(false);
+			}
+		}
+
+		setSize(1000, 1000);
+		setVisible(true);
+	}
+
+	class myActionListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			GoEgg wi = (GoEgg) e.getSource();
+			if (turn == white) {
+				wi.setIcon(white);
+				wi.state = "W";
+				turn = black;
+
+			} else {
+				wi.setIcon(black);
+				wi.state = "B";
+				turn = white;
+			}
+			checkWin(wi);
+			wi.removeActionListener(this);
+		}
+
+	}
+
+	public void checkWin(GoEgg e) {
+		//�¿� Ž��
+		int checkx = e.x;
+		int checky = e.y;
+		int count = 0;
+		while (checky >= 0 && goEgg[checkx][checky].state.equals(e.state)) {
+			checky -= 1;
+		}
+		checky += 1;
+		while (checky < 26 && goEgg[checkx][checky].state.equals(e.state)) {
+			checky += 1;
+			count++;
+		}
+		if (count == 5) {
+			if (e.state.equals("B")) {
+				JOptionPane.showMessageDialog(null,  "흑돌이 승리했습니다.","게임종료", JOptionPane.QUESTION_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(null, "백돌이 승리했습니다.","게임종료", JOptionPane.QUESTION_MESSAGE);
+			}
+
+		}
+		/////////////////////////////////
+		checkx = e.x;
+		checky = e.y;
+		count = 0;
+
+		while (checkx >= 0 && goEgg[checkx][checky].state.equals(e.state)) {
+			checkx -= 1;
+		}
+		checkx += 1;
+		while (checkx < 26 && goEgg[checkx][checky].state.equals(e.state)) {
+			checkx += 1;
+			count++;
+		}
+		if (count == 5) {
+			if (e.state.equals("B")) {
+				JOptionPane.showMessageDialog(null, "흑돌이 승리했습니다.","게임종료", JOptionPane.QUESTION_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(null, "백돌이 승리했습니다.","게임종료", JOptionPane.QUESTION_MESSAGE);
+			}
+		}
+		////////////////////
+		checkx = e.x;
+		checky = e.y;
+		count = 0;
+
+		while (checkx >= 0 && checky >= 0 && goEgg[checkx][checky].state.equals(e.state)) {
+			checkx -= 1;
+			checky -= 1;
+		}
+		checkx += 1;
+		checky += 1;
+		while (checkx < 26 && checky < 26 && goEgg[checkx][checky].state.equals(e.state)) {
+			checkx += 1;
+			checky += 1;
+			count++;
+		}
+		if (count == 5) {
+			if (e.state.equals("B")) {
+				JOptionPane.showMessageDialog(null, "흑돌이 승리했습니다.","게임종료", JOptionPane.QUESTION_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(null, "백돌이 승리했습니다.","게임종료", JOptionPane.QUESTION_MESSAGE);
+			}
+		}
+		//		//////////////////
+		checkx = e.x;
+		checky = e.y;
+		count = 0;
+
+		while (checkx >= 0 && checky < 26 && goEgg[checkx][checky].state.equals(e.state)) {
+			checkx -= 1;
+			checky += 1;
+		}
+		checkx += 1;
+		checky -= 1;
+		while (checkx < 26 && checky >= 0 && goEgg[checkx][checky].state.equals(e.state)) {
+			checkx += 1;
+			checky -= 1;
+			count++;
+		}
+
+		if (count == 5) {
+			if (e.state.equals("B")) {
+				JOptionPane.showMessageDialog(null, "흑돌이 승리했습니다.","게임종료", JOptionPane.QUESTION_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(null, "백돌이 승리했습니다.","게임종료", JOptionPane.QUESTION_MESSAGE);
+			}
+		}
+
+	}
+
+	public static void main(String[] args) {
+		new OmokGame();
+		
+	}
+}
 
 
+class GoEgg extends JButton {
+	int x;
+	int y;
+	String state;
+
+	public GoEgg(int x, int y, ImageIcon image) {
+		super(image);
+		this.x = x;
+		this.y = y;
+		state = "N";
+	}
+	
 }
