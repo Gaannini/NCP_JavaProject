@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import Client.ClientHandler;
-import liarGame.LiarGame;
 
 public class GameServer {
 	private Map<String, List<Socket>> gameClients; // 클라이언트들의 소켓을 저장하는 리스트
@@ -18,7 +17,6 @@ public class GameServer {
 	public GameServer() {
 		gameClients = new HashMap<>();
 		games = new HashMap<String, Game>();
-		games.put("liar", new LiarGame());
 	}
 
 	// 게임서버를 시작하는 메소드
@@ -73,3 +71,4 @@ public class GameServer {
 		gameServer.startServer(12345);
 	}
 }
+
