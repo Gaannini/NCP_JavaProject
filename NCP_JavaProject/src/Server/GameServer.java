@@ -12,6 +12,7 @@ import java.util.Map;
 
 import bingoGame.BingoGame;
 import liarGame.LiarGame;
+import omokGame.OmokGame;
 
 public class GameServer {
 	private Map<String, List<Socket>> gameClients; // 클라이언트들의 소켓을 저장하는 리스트
@@ -26,6 +27,7 @@ public class GameServer {
 		games = new HashMap<String, Game>();
 		games.put("liar", new LiarGame());
 		games.put("bingo", new BingoGame());
+		games.put("omok", new OmokGame());
 
 	}
 

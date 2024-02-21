@@ -1,7 +1,16 @@
 package omokGame;
 
+import java.net.Socket;
 import java.util.Scanner;
-public class OmokGame {
+
+import Server.Game;
+public class OmokGame implements Game{
+	
+	@Override
+	public void start(Socket socket) {
+		System.out.println("===오목게임 시작===");
+		
+	}
 	
 	
     private static final int SIZE = 15;
@@ -125,4 +134,6 @@ public class OmokGame {
         }
         return count;
     }
+
+
 }
