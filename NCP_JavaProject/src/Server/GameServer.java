@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import BingoGame.Bingo;
-import liarGame.LiarGame;
 
 public class GameServer {
 	private Map<String, List<Socket>> gameClients; // 클라이언트들의 소켓을 저장하는 리스트
@@ -24,10 +23,11 @@ public class GameServer {
 		gameClients = new HashMap<>();
 		clientIds = new HashMap<>();
 		games = new HashMap<String, Game>();
-		games.put("liar", new LiarGame());
 		games.put("bingo", new Bingo());
 
 	}
+
+	// TODO : 까불지않기!!
 
 	// 게임서버를 시작하는 메소드
 	public void startServer(int port) {
@@ -86,29 +86,16 @@ public class GameServer {
 				case "ID":
 					clientId = data;
 					clientIds.put(socket, clientId);
-					notifyClients(clientId + " is enter the room.", "ID");
+					System.out.println(clientId + "들어옴");
+
+					// notifyClients(clientId + " is enter the room.", "ID");
 					// sendClientList();
 					break;
 				case "gamename":
+					System.out.println(clientId + "님이 " + data + "게임을 선택하셨습니다.");
 					startGame(data);
 					break;
 				// Handle other protocols
-				}
-			}
-		}
-	}
-
-	// 정보 ㄹ공지,,,?
-	private void notifyClients(String message, String protocol) {
-		for (Map.Entry<String, List<Socket>> entry : gameClients.entrySet()) {
-			List<Socket> clientSockets = entry.getValue();
-			for (Socket clientSocket : clientSockets) {
-				try {
-					PrintWriter clientWriter = new PrintWriter(clientSocket.getOutputStream(), true);
-					clientWriter.println("SERVER&" + message);
-					clientWriter.println(protocol + "&");
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
 			}
 		}
