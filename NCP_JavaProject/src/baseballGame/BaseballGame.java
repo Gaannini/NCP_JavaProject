@@ -1,41 +1,18 @@
 package baseballGame;
 
-// AbsoluteLayout 사용할건디 !
-
 import javax.management.monitor.MonitorSettingException;
 import javax.swing.*;
-import javax.swing.border.LineBorder;
-
+import javax.swing.border.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.awt.event.*;
+import java.io.*;
+import java.net.*;
+import javax.swing.border.*;
 
 import Server.Game;
 
-public class BaseballGame extends JFrame implements Game {
-	private Socket socket;
+public class BaseballGame extends JFrame {
 
-	@Override
-	public void start(Socket socket) {
-		this.socket = socket;
-		new bal(socket).start();
-	}
-
-	public class bal extends Thread {
-		private Socket socket; // 클라이언트 소켓을 받아서 사용하는 변수
-		public PrintWriter writer; // 쓰기 버퍼.
-		private BufferedReader reader; // 읽기 버퍼.
-		public String exMsg; // 클라이언트 아이디를 담는 변수.
-		public String gamename; // 클라이언트가 선택한 게임 이름
-
-		public bal(Socket socket) {
-			this.socket = socket;
-		}
-	}
-	
 	// 폰트 크기 설정
 	private Font smallFont; // 16px
 	private Font mediumFont; // 24px
@@ -50,6 +27,9 @@ public class BaseballGame extends JFrame implements Game {
 	// 유저가 입력한 숫자 패널
 	private JPanel numPanel;
 
+	// 유저가 입력했던 숫자 모음 영역 
+	private JPanel userPanel;
+
 	// 유저가 입력했던 오답 모음 (9개)
 	private JPanel panel1;
 	private JPanel panel2;
@@ -62,7 +42,7 @@ public class BaseballGame extends JFrame implements Game {
 	private JPanel panel9;
 
 	// 키보드 패널
-	private KeyboardPanel keyboardPanel;
+	private JPanel keyboardPanel;
 
 	// 키보드 - 버튼(0 ~ 9)
 	private JButton button0;
@@ -76,7 +56,6 @@ public class BaseballGame extends JFrame implements Game {
 	private JButton button8;
 	private JButton button9;
 
-	// TODO : 버튼 이미지 삽입 
 	// 키보드 버튼 - 이미지 아이콘
 	private ImageIcon icon0;
 	private ImageIcon icon1;
@@ -96,20 +75,8 @@ public class BaseballGame extends JFrame implements Game {
 		ImageIcon xyImage = new ImageIcon(yImage);
 		return xyImage;
 	}
-	
-	// TODO : 경로 삽입 
-	// 이미지 삽입 패널 클래스
-	class KeyboardPanel extends JPanel {
-		private ImageIcon icon = new ImageIcon("");
-		private Image imgMain = icon.getImage();
 
-		public void paintComponent(Graphics g) {
-			super.paintComponent(g);
-			g.drawImage(imgMain, 0, 0, getWidth(), getHeight(), null);
-		}
-	}
-
-	// BaseballGame 생성자 
+	// BaseballGame 생성자
 	public BaseballGame() {
 		init();
 		setting();
@@ -119,35 +86,59 @@ public class BaseballGame extends JFrame implements Game {
 	}
 
 	private void init() {
-		// 이미지 패널
-		keyboardPanel = new KeyboardPanel();
-		
 		// 패널
 		mainPanel = new JPanel();
+		mainPanel.setBorder(null);
+		mainPanel.setBackground(new Color(255, 255, 255));
 		numPanel = new JPanel();
+		numPanel.setBorder(null);
+		userPanel = new JPanel();
+		userPanel.setBackground(new Color(255, 255, 255));
+		userPanel.setLocation(26, 205);
+		userPanel.setSize(561, 472);
 		panel1 = new JPanel();
+		panel1.setBackground(new Color(240, 255, 240));
+		panel1.setBounds(0, 0, 170, 148);
 		panel2 = new JPanel();
+		panel2.setBackground(new Color(240, 255, 240));
+		panel2.setBounds(200, 0, 170, 148);
 		panel3 = new JPanel();
+		panel3.setBackground(new Color(240, 255, 240));
+		panel3.setBounds(400, 0, 170, 148);
 		panel4 = new JPanel();
+		panel4.setBackground(new Color(240, 255, 240));
+		panel4.setBounds(0, 162, 170, 148);
 		panel5 = new JPanel();
+		panel5.setBackground(new Color(240, 255, 240));
+		panel5.setBounds(200, 162, 170, 148);
 		panel6 = new JPanel();
+		panel6.setBackground(new Color(240, 255, 240));
+		panel6.setBounds(400, 162, 170, 148);
 		panel7 = new JPanel();
+		panel7.setBackground(new Color(240, 255, 240));
+		panel7.setBounds(0, 325, 170, 148);
 		panel8 = new JPanel();
+		panel8.setBackground(new Color(240, 255, 240));
+		panel8.setBounds(200, 325, 170, 148);
 		panel9 = new JPanel();
+		panel9.setBackground(new Color(240, 255, 240));
+		panel9.setBounds(400, 325, 170, 148);
 		
-		// TODO : 경로 삽입 
+		keyboardPanel = new JPanel();
+		keyboardPanel.setBackground(new Color(255, 255, 255));
+
 		// 이미지
-		icon0 = new ImageIcon("");
-		icon1 = new ImageIcon("");
-		icon2 = new ImageIcon("");
-		icon3 = new ImageIcon("");
-		icon4 = new ImageIcon("");
-		icon5 = new ImageIcon("");
-		icon6 = new ImageIcon("");
-		icon7 = new ImageIcon("");
-		icon8 = new ImageIcon("");
-		icon9 = new ImageIcon("");
-		
+		icon0 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon0.jpeg");
+		icon1 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon1.jpeg");
+		icon2 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon2.jpeg");
+		icon3 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon3.jpeg");
+		icon4 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon4.jpeg");
+		icon5 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon5.jpeg");
+		icon6 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon6.jpeg");
+		icon7 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon7.jpeg");
+		icon8 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon8.jpeg");
+		icon9 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon9.jpeg");
+
 		// 버튼
 		button0 = new JButton(icon0);
 		button1 = new JButton(icon1);
@@ -159,39 +150,159 @@ public class BaseballGame extends JFrame implements Game {
 		button7 = new JButton(icon7);
 		button8 = new JButton(icon8);
 		button9 = new JButton(icon9);
-		
+
 		// 라벨
 		nameLabel = new JLabel("숫자 야구 게임");
-		
-		// 폰트 
-		smallFont = new Font("맑은고딕", Font.PLAIN, 16);
-		mediumFont = new Font("맑은고딕", Font.PLAIN, 24);
-		largeFont = new Font("굴림", Font.PLAIN, 36);
+		nameLabel.setBackground(new Color(192, 192, 192));
+		nameLabel.setForeground(new Color(169, 169, 169));
+		nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+		// 폰트
+		smallFont = new Font("배달의민족 주아", Font.PLAIN, 16);
+		mediumFont = new Font("배달의민족 주아", Font.PLAIN, 24);
+		largeFont = new Font("배달의민족 주아 Regular", Font.PLAIN, 36);
 	}
 
 	private void setting() {
 		setTitle("숫자 야구 게임");
-		setSize(500, 1000);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		//setResizable(false); // 유저가 크기 조절 못하게 함 
-		
+		setSize(620, 1000);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 창 닫기 버튼
+		setResizable(false); // 유저가 크기 조절 못하게 함
+
 		setContentPane(mainPanel);
-		mainPanel.setLayout(null); // 레이아웃 매니저 막아둠
-		
-		nameLabel.setBounds(0, 2, 500, 36); 
+
+		nameLabel.setBounds(170, 37, 280, 50);
 		nameLabel.setFont(largeFont);
-		
+
 		numPanel.setVisible(true);
-		numPanel.setBounds(0, 36, 500, 100);
-		numPanel.setBackground(Color.LIGHT_GRAY);
+		numPanel.setBounds(26, 112, 570, 70);
+		numPanel.setBackground(new Color(240, 255, 255));
+
+		userPanel.setVisible(true);
+		userPanel.setBounds(26, 200, 570, 472);
+		
+		panel1.setVisible(true);
+		panel2.setVisible(true);
+		panel3.setVisible(true);
+		panel4.setVisible(true);
+		panel5.setVisible(true);
+		panel6.setVisible(true);
+		panel7.setVisible(true);
+		panel8.setVisible(true);
+		panel9.setVisible(true);
+
+		keyboardPanel.setVisible(true);
+		keyboardPanel.setBounds(15, 700, 590, 230);
+
+		int buttonWidth = keyboardPanel.getWidth() / 10;
+		int buttonHeigth = keyboardPanel.getHeight() / 2;
+		button1.setBounds(0, 0, buttonWidth, buttonHeigth);
+		button2.setBounds(0, 0, buttonWidth, buttonHeigth);
+		button3.setBounds(0, 0, buttonWidth, buttonHeigth);
+		button4.setBounds(0, 0, buttonWidth, buttonHeigth);
+		button5.setBounds(0, 0, buttonWidth, buttonHeigth);
+		button6.setBounds(0, 0, buttonWidth, buttonHeigth);
+		button7.setBounds(0, 0, buttonWidth, buttonHeigth);
+		button8.setBounds(0, 0, buttonWidth, buttonHeigth);
+		button9.setBounds(0, 0, buttonWidth, buttonHeigth);
+		button0.setBounds(0, 0, buttonWidth, buttonHeigth);
+
+		icon0 = ImageSetSize(icon0, buttonWidth, buttonHeigth);
+		icon1 = ImageSetSize(icon1, buttonWidth, buttonHeigth);
+		icon2 = ImageSetSize(icon2, buttonWidth, buttonHeigth);
+		icon3 = ImageSetSize(icon3, buttonWidth, buttonHeigth);
+		icon4 = ImageSetSize(icon4, buttonWidth, buttonHeigth);
+		icon5 = ImageSetSize(icon5, buttonWidth, buttonHeigth);
+		icon6 = ImageSetSize(icon6, buttonWidth, buttonHeigth);
+		icon7 = ImageSetSize(icon7, buttonWidth, buttonHeigth);
+		icon8 = ImageSetSize(icon8, buttonWidth, buttonHeigth);
+		icon9 = ImageSetSize(icon9, buttonWidth, buttonHeigth);
+
 	}
 
 	private void batch() {
+		mainPanel.setLayout(null);
 		mainPanel.add(numPanel);
 		mainPanel.add(nameLabel);
+		
+		mainPanel.add(userPanel);
+		mainPanel.add(keyboardPanel);
+		
+		userPanel.setLayout(null); // 지우지마!! 
+
+		userPanel.add(panel1);
+		userPanel.add(panel2);
+		userPanel.add(panel3);
+		userPanel.add(panel4);
+		userPanel.add(panel5);
+		userPanel.add(panel6);
+		userPanel.add(panel7);
+		userPanel.add(panel8);
+		userPanel.add(panel9);
+
+		keyboardPanel.add(button1);
+		keyboardPanel.add(button2);
+		keyboardPanel.add(button3);
+		keyboardPanel.add(button4);
+		keyboardPanel.add(button5);
+		keyboardPanel.add(button6);
+		keyboardPanel.add(button7);
+		keyboardPanel.add(button8);
+		keyboardPanel.add(button9);
+		keyboardPanel.add(button0);
 	}
 
 	private void listener() {
+		button1.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		button2.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		button3.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		button4.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		button5.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		button6.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		button7.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		button8.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		button9.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		button0.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 
 	}
 
