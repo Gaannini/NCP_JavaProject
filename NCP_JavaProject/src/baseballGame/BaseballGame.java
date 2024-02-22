@@ -22,7 +22,7 @@ public class BaseballGame extends JFrame {
 	private JPanel mainPanel;
 
 	// 게임 이름
-	private JLabel nameLabel;
+	private NamePanel namePanel;
 
 	// 유저가 입력한 숫자 패널
 	private JPanel numPanel;
@@ -75,6 +75,17 @@ public class BaseballGame extends JFrame {
 		ImageIcon xyImage = new ImageIcon(yImage);
 		return xyImage;
 	}
+	
+	// 이미지 삽입 패널 클래스
+	class NamePanel extends JPanel {
+		private ImageIcon icon = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/title.jpeg");
+		private Image imgMain = icon.getImage();
+
+		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			g.drawImage(imgMain, 0, 0, getWidth(), getHeight(), null);
+		}
+	}
 
 	// BaseballGame 생성자
 	public BaseballGame() {
@@ -86,6 +97,9 @@ public class BaseballGame extends JFrame {
 	}
 
 	private void init() {
+		// 이미지 삽입 패널
+		namePanel = new NamePanel();
+		
 		// 패널
 		mainPanel = new JPanel();
 		mainPanel.setBorder(null);
@@ -152,15 +166,13 @@ public class BaseballGame extends JFrame {
 		button9 = new JButton(icon9);
 
 		// 라벨
-		nameLabel = new JLabel("숫자 야구 게임");
-		nameLabel.setBackground(new Color(192, 192, 192));
-		nameLabel.setForeground(new Color(169, 169, 169));
-		nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		namePanel.setBackground(new Color(192, 192, 192));
+		namePanel.setForeground(new Color(169, 169, 169));
 
 		// 폰트
 		smallFont = new Font("배달의민족 주아", Font.PLAIN, 16);
 		mediumFont = new Font("배달의민족 주아", Font.PLAIN, 24);
-		largeFont = new Font("배달의민족 주아 Regular", Font.PLAIN, 36);
+		largeFont = new Font("배달의민족 주아", Font.PLAIN, 36);
 	}
 
 	private void setting() {
@@ -171,8 +183,7 @@ public class BaseballGame extends JFrame {
 
 		setContentPane(mainPanel);
 
-		nameLabel.setBounds(170, 37, 280, 50);
-		nameLabel.setFont(largeFont);
+		namePanel.setBounds(170, 37, 280, 50);
 
 		numPanel.setVisible(true);
 		numPanel.setBounds(26, 112, 570, 70);
@@ -223,7 +234,7 @@ public class BaseballGame extends JFrame {
 	private void batch() {
 		mainPanel.setLayout(null);
 		mainPanel.add(numPanel);
-		mainPanel.add(nameLabel);
+		mainPanel.add(namePanel);
 		
 		mainPanel.add(userPanel);
 		mainPanel.add(keyboardPanel);
