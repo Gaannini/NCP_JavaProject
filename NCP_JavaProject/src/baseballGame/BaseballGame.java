@@ -9,8 +9,33 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
-public class BaseballGame extends JFrame {
+import Server.Game;
+
+public class BaseballGame extends JFrame implements Game {
+	private Socket socket;
+
+	@Override
+	public void start(Socket socket) {
+		this.socket = socket;
+		new bal(socket).start();
+	}
+
+	public class bal extends Thread {
+		private Socket socket; // 클라이언트 소켓을 받아서 사용하는 변수
+		public PrintWriter writer; // 쓰기 버퍼.
+		private BufferedReader reader; // 읽기 버퍼.
+		public String exMsg; // 클라이언트 아이디를 담는 변수.
+		public String gamename; // 클라이언트가 선택한 게임 이름
+
+		public bal(Socket socket) {
+			this.socket = socket;
+		}
+	}
+	
 	// 폰트 크기 설정
 	private Font smallFont; // 16px
 	private Font mediumFont; // 24px
@@ -151,20 +176,19 @@ public class BaseballGame extends JFrame {
 		//setResizable(false); // 유저가 크기 조절 못하게 함 
 		
 		setContentPane(mainPanel);
-		//mainPanel.setLayout(null); // 레이아웃 매니저 막아둠
+		mainPanel.setLayout(null); // 레이아웃 매니저 막아둠
 		
-		nameLabel.setBounds(0, 2, 62, 32); 
+		nameLabel.setBounds(0, 2, 500, 36); 
 		nameLabel.setFont(largeFont);
-		nameLabel.setHorizontalAlignment(JLabel.CENTER); 
 		
 		numPanel.setVisible(true);
-		numPanel.setBounds(500, 100, 200, 200);
+		numPanel.setBounds(0, 36, 500, 100);
 		numPanel.setBackground(Color.LIGHT_GRAY);
 	}
 
 	private void batch() {
-		mainPanel.add(nameLabel);
 		mainPanel.add(numPanel);
+		mainPanel.add(nameLabel);
 	}
 
 	private void listener() {

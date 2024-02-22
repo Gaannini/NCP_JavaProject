@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import omokGame.OmokGame;
 import exgame.exgameclient;
-
+import baseballGame.BaseballGame;
 
 public class GameClientGUI extends JFrame {
 	// 서버
@@ -42,6 +42,7 @@ public class GameClientGUI extends JFrame {
 	private JButton selectBingoBtn; // 빙고게임 선택버튼
 	private JButton selectOmokBtn; // 오목게임 선택버튼
 	private JButton selectexBtn; // 오목게임 선택버튼
+	private JButton selectBaseballBtn; // 숫자야구게임 버튼 
 
 	// 예시
 	private JPanel exGameJPanel;
@@ -75,6 +76,7 @@ public class GameClientGUI extends JFrame {
 		selectBingoBtn = new JButton("Bingo Game");
 		selectOmokBtn = new JButton("Omok Game");
 		selectexBtn = new JButton("ex Game");
+		selectBaseballBtn = new JButton("Baseball Game");
 
 //		exGameJPanel = new JPanel();
 //		exGameJPanel.setBounds(0, 0, 500, 500);
@@ -109,6 +111,7 @@ public class GameClientGUI extends JFrame {
 		selectBingoBtn.setBounds(113, 122, 191, 50);
 		selectOmokBtn.setBounds(138, 225, 109, 50);
 		selectexBtn.setBounds(138, 275, 109, 50);
+		selectBaseballBtn.setBounds(138, 275, 109, 50);
 
 		// 예시게임
 //		getContentPane().add(exGameJPanel);
@@ -131,6 +134,7 @@ public class GameClientGUI extends JFrame {
 		gameSelectJPanel.add(selectBingoBtn);
 		gameSelectJPanel.add(selectOmokBtn);
 		gameSelectJPanel.add(selectexBtn);
+		gameSelectJPanel.add(selectBaseballBtn);
 
 		// exGameJPanel.add(exGameJLabel);
 	}
@@ -183,6 +187,15 @@ public class GameClientGUI extends JFrame {
 				GameName = "ex";
 				sendSelectgame(GameName);
 				exgameclient exgame = new exgameclient(socket);
+			}
+		});
+
+		// 숫자 야구 게임 선택!
+		selectexBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				GameName = "baseball";
+				sendSelectgame(GameName);
 			}
 		});
 
