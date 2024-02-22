@@ -8,7 +8,7 @@ import java.net.Socket;
 
 public class GameClient {
 	public static void main(String[] args) {
-		String server = "127.0.0.1";
+		String server = "192.168.0.34";
 		int serverPort = 12345;
 
 		try {
@@ -20,6 +20,7 @@ public class GameClient {
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
 			// 사용자 입력을 위한 bufferedReader
 			BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+			
 
 			// 사용자로부터 닉네임 입력 받고 서버에 전송
 			System.out.print("닉네임을 입력하세요 >> ");
@@ -32,6 +33,9 @@ public class GameClient {
 			objectOutputStream.writeObject(gamename); // 게임 선택
 
 			System.out.println("당신의 닉네임은 '" + nickname + "' 이고 선택한 게임은 '" + gamename + "' 입니다.");
+			
+			 String result = bf.readLine();
+	            System.out.println(result);
 
 			socket.close();
 		} catch (IOException e) {

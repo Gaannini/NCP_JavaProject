@@ -1,6 +1,7 @@
 package Server;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -11,15 +12,15 @@ import java.util.List;
 import java.util.Map;
 
 import bingoGame.BingoGame;
+import exgame.exgameserver;
 import omokGame.OmokGame;
-import catchmind.CatchmindServer;
 
 public class GameServer {
 	private Map<String, List<Socket>> gameClients; // 클라이언트들의 소켓을 저장하는 리스트
 	private Map<Socket, String> clientIds; // 클라이언트별 아이디를 저장하는 맵
 	private Map<String, Game> games;// 게임이름과 해당 게임을 매핑하는 맵
 	private ServerSocket serverSocket; // 서버 소켓.
-	private Socket clientsocket; // 클라이언트가 접속하면 새로 만드는 소켓
+	private static Socket clientsocket; // 클라이언트가 접속하면 새로 만드는 소켓
 
 	public GameServer() {
 		gameClients = new HashMap<>();
@@ -27,7 +28,8 @@ public class GameServer {
 		games = new HashMap<String, Game>();
 		games.put("bingo", new BingoGame());
 		games.put("omok", new OmokGame());
-		games.put("catchmind", new CatchmindServer());
+		games.put("ex", new exgameserver());
+
 
 	}
 
@@ -68,12 +70,17 @@ public class GameServer {
 			try {
 				reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				writer = new PrintWriter(socket.getOutputStream(), true);
+				
 
 				String clientMsg;
 				while ((clientMsg = reader.readLine()) != null) {
 					String[] parsedMsg = clientMsg.split("&");
 					// Client Thread에서 동작하는 프로토콜
 					handleProtocol(parsedMsg);
+					// 받은 클래스 이름을 실행하고 결과를 클라이언트에게 다시 전송
+			        PrintWriter out = new PrintWriter(clientsocket.getOutputStream());
+			        out.println("서버에서 실행된 결과");
+					 
 
 				}
 			} catch (Exception e) {
@@ -81,7 +88,7 @@ public class GameServer {
 			}
 		}
 
-		private void handleProtocol(String[] parsedMsg) {
+		private void handleProtocol(String[] parsedMsg) throws IOException {
 			if (parsedMsg.length >= 2) {
 				String protocol = parsedMsg[0];
 				String data = parsedMsg[1];
@@ -98,6 +105,7 @@ public class GameServer {
 				case "gamename":
 					System.out.println(clientId + "님이 " + data + "게임을 선택하셨습니다.");
 					startGame(data);
+				
 					break;
 				// Handle other protocols
 				}
@@ -117,8 +125,10 @@ public class GameServer {
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args){
 		GameServer gameServer = new GameServer();
 		gameServer.startServer(12345);
+		
+		
 	}
 }
