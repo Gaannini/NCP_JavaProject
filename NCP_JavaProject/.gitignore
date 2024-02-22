@@ -1,6 +1,11 @@
-/bin/
-/.metadata/
-/.recommenders
-.gitignore
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
 .settings/
-*.class
+.loadpath
+.recommenders
