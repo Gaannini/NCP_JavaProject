@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import bingoGame.BingoGame;
+import exgame.exgameserver;
 import omokGame.OmokGame;
 
 public class GameServer {
@@ -27,6 +28,8 @@ public class GameServer {
 		games = new HashMap<String, Game>();
 		games.put("bingo", new BingoGame());
 		games.put("omok", new OmokGame());
+		games.put("ex", new exgameserver());
+
 
 	}
 
