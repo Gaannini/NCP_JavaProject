@@ -11,8 +11,9 @@ import java.util.List;
 import java.util.Map;
 
 import bingoGame.BingoGame;
-import omokGame.OmokGame;
 import catchmind.CatchmindServer;
+import exgame.exgameserver;
+import omokGame.OmokGame;
 
 public class GameServer {
 	private Map<String, List<Socket>> gameClients; // 클라이언트들의 소켓을 저장하는 리스트
@@ -28,6 +29,7 @@ public class GameServer {
 		games.put("bingo", new BingoGame());
 		games.put("omok", new OmokGame());
 		games.put("catchmind", new CatchmindServer());
+		games.put("ex", new exgameserver());
 
 	}
 
