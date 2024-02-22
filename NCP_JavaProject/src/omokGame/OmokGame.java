@@ -18,8 +18,7 @@ public class OmokGame extends JFrame implements Game {
 
 	@Override
 	public void start(Socket socket) {
-		OmokBoard();
-		OmokGame.main(null);
+		
 	}
 	GoEgg goEgg[][];
 	ImageIcon img = new ImageIcon("images//empty.png");
@@ -28,6 +27,11 @@ public class OmokGame extends JFrame implements Game {
 	ImageIcon turn = black;
 
 	public OmokGame() {
+		
+	}
+	public void startgame() {
+		OmokBoard();
+		OmokGame.main(null);
 		
 	}
 	public void OmokBoard() {
@@ -47,7 +51,9 @@ public class OmokGame extends JFrame implements Game {
 				c.add(goEgg[i][j]);
 				goEgg[i][j].addActionListener(goAction);
 				goEgg[i][j].setBorderPainted(false);
+				System.out.println("착수한 위치:");
 			}
+			
 		}
 
 		setSize(1000, 1000);
@@ -77,10 +83,11 @@ public class OmokGame extends JFrame implements Game {
 	}
 
 	public void checkWin(GoEgg e) {
-		//�¿� Ž��
+		//오목 조건 체크
 		int checkx = e.x;
 		int checky = e.y;
 		int count = 0;
+		//세로 방향 체크
 		while (checky >= 0 && goEgg[checkx][checky].state.equals(e.state)) {
 			checky -= 1;
 		}
@@ -101,7 +108,8 @@ public class OmokGame extends JFrame implements Game {
 		checkx = e.x;
 		checky = e.y;
 		count = 0;
-
+		
+		//가로 방향 체크
 		while (checkx >= 0 && goEgg[checkx][checky].state.equals(e.state)) {
 			checkx -= 1;
 		}
@@ -122,6 +130,7 @@ public class OmokGame extends JFrame implements Game {
 		checky = e.y;
 		count = 0;
 
+		//↖방향 체크
 		while (checkx >= 0 && checky >= 0 && goEgg[checkx][checky].state.equals(e.state)) {
 			checkx -= 1;
 			checky -= 1;
@@ -145,6 +154,7 @@ public class OmokGame extends JFrame implements Game {
 		checky = e.y;
 		count = 0;
 
+		//↗↙방향 체크
 		while (checkx >= 0 && checky < 26 && goEgg[checkx][checky].state.equals(e.state)) {
 			checkx -= 1;
 			checky += 1;
@@ -169,6 +179,7 @@ public class OmokGame extends JFrame implements Game {
 
 	public static void main(String[] args) {
 		new OmokGame();
+		
 		
 	}
 }

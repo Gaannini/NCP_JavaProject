@@ -13,9 +13,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import omokGame.OmokGame;
+
 public class GameClientGUI extends JFrame {
 	// 서버
-	String server = "192.168.0.37";// 서버IP
+	String server = "192.168.0.34";// 서버IP
 	int serverPort = 12345; // 임의 포트
 
 	// 통신
@@ -25,7 +27,6 @@ public class GameClientGUI extends JFrame {
 
 	// 클라이언트가 입력한 아이디값
 	private String IDString;
-	// 클라이언트가 선택한 게임 이름
 	private String GameName;
 
 	private JPanel startJPanel; // 게임 첫 화면
@@ -36,7 +37,7 @@ public class GameClientGUI extends JFrame {
 
 	private JPanel gameSelectJPanel; // 게임 선택화면
 	private JLabel gameSelectMsg;// "게임을 선택하세요"
-	private JButton selectCatchmindBtn; // 캐치마인드게임 선택버튼
+	private JButton selectLiarBtn; // 라이어게임 선택버튼
 	private JButton selectBingoBtn; // 빙고게임 선택버튼
 	private JButton selectOmokBtn; // 오목게임 선택버튼
 
@@ -64,7 +65,7 @@ public class GameClientGUI extends JFrame {
 		gameSelectJPanel = new JPanel();
 		gameSelectJPanel.setBounds(0, 0, 400, 400);
 		gameSelectMsg = new JLabel("게임을 선택하세요");
-		selectCatchmindBtn = new JButton("Catchmind Game");
+		selectLiarBtn = new JButton("Liar Game");
 		selectBingoBtn = new JButton("Bingo Game");
 		selectOmokBtn = new JButton("Omok Game");
 
@@ -95,7 +96,7 @@ public class GameClientGUI extends JFrame {
 		gameSelectJPanel.setVisible(false); // 시작 시에는 화면에 표시되지 않도록 설정
 
 		gameSelectMsg.setBounds(204, 6, 100, 50);
-		selectCatchmindBtn.setBounds(129, 53, 165, 50);
+		selectLiarBtn.setBounds(129, 53, 165, 50);
 		selectBingoBtn.setBounds(113, 122, 191, 50);
 		selectOmokBtn.setBounds(138, 225, 109, 50);
 	}
@@ -108,7 +109,7 @@ public class GameClientGUI extends JFrame {
 		startJPanel.add(gameStartBtn);
 
 		gameSelectJPanel.add(gameSelectMsg);
-		gameSelectJPanel.add(selectCatchmindBtn);
+		gameSelectJPanel.add(selectLiarBtn);
 		gameSelectJPanel.add(selectBingoBtn);
 		gameSelectJPanel.add(selectOmokBtn);
 	}
@@ -126,10 +127,10 @@ public class GameClientGUI extends JFrame {
 		});
 
 		// 라이어게임 선택!
-		selectCatchmindBtn.addActionListener(new ActionListener() {
+		selectLiarBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				GameName = "catchmind";
+				GameName = "liar";
 				sendSelectgame(GameName);
 			}
 		});
@@ -149,6 +150,8 @@ public class GameClientGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				GameName = "omok";
 				sendSelectgame(GameName);
+				OmokGame omok = new OmokGame();
+				omok.startgame();
 			}
 		});
 	}
