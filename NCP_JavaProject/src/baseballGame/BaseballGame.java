@@ -12,6 +12,9 @@ import javax.swing.border.*;
 import Server.Game;
 
 public class BaseballGame extends JFrame {
+	// 통신
+	private Socket socket;
+	private PrintWriter printWriter;
 
 	// 폰트 크기 설정
 	private Font smallFont; // 16px
@@ -88,12 +91,14 @@ public class BaseballGame extends JFrame {
 	}
 
 	// BaseballGame 생성자
-	public BaseballGame() {
+	public BaseballGame(Socket socket) {
+		this.socket = socket;
 		init();
 		setting();
 		batch();
 		listener();
 		setVisible(true);
+		System.out.println("BaseballGame 생성자 실행");
 	}
 
 	private void init() {
@@ -264,9 +269,16 @@ public class BaseballGame extends JFrame {
 	}
 
 	private void listener() {
+		try {
+			printWriter = new PrintWriter(socket.getOutputStream(), true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		button1.addActionListener(new ActionListener() {
-
+			@Override
 			public void actionPerformed(ActionEvent e) {
+				// ex)
+				printWriter.println("baseball&" + "클라이언트");
 			}
 		});
 		button2.addActionListener(new ActionListener() {
@@ -315,9 +327,5 @@ public class BaseballGame extends JFrame {
 			}
 		});
 
-	}
-
-	public static void main(String[] args) {
-		new BaseballGame();
 	}
 }
