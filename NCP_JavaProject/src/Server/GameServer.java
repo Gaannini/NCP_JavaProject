@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import baseballGame.BaseballServer;
 import bingoGame.BingoGame;
 import exgame.exgameserver;
 import omokGame.OmokGame;
@@ -29,7 +30,7 @@ public class GameServer {
 		games.put("bingo", new BingoGame());
 		games.put("omok", new OmokGame());
 		games.put("ex", new exgameserver());
-		// games.put("baseball", new BaseballGame());
+		games.put("baseball", new BaseballServer());
 	}
 
 	// TODO : 까불지않기!!
@@ -101,9 +102,9 @@ public class GameServer {
 					break;
 				case "gamename":
 					System.out.println(clientId + "님이 " + data + "게임을 선택하셨습니다.");
-					startGame(data);
-
+					startGame(data, socket); // 클라이언트의 소켓 정보 전달
 					break;
+
 				// Handle other protocols
 				}
 			}
@@ -111,12 +112,12 @@ public class GameServer {
 	}
 
 	// 사용자가 선택한 게임 시작 메소드
-	public void startGame(String gameName) {
+	public void startGame(String gameName, Socket clientSocket) {
 		Game selectedGame = games.get(gameName.toLowerCase());
 		if (selectedGame != null) {
-			selectedGame.start(clientsocket);
+			selectedGame.start(clientSocket);
 			List<Socket> clients = gameClients.computeIfAbsent(gameName, k -> new ArrayList<>());
-			clients.add(clientsocket);
+			clients.add(clientSocket);
 		} else {
 			System.out.println("게임이름을 잘못입력하셨습니다.");
 		}
@@ -127,4 +128,5 @@ public class GameServer {
 		gameServer.startServer(12345);
 
 	}
+
 }
