@@ -14,6 +14,7 @@ import java.util.Map;
 import baseballGame.BaseballServer;
 import bingoGame.BingoGame;
 import exgame.exgameserver;
+import memoryGame.MemoryServer;
 import omokGame.OmokServer;
 
 public class GameServer {
@@ -27,7 +28,7 @@ public class GameServer {
 		gameClients = new HashMap<>();
 		clientIds = new HashMap<>();
 		games = new HashMap<String, Game>();
-		games.put("bingo", new BingoGame());
+		games.put("memory", new MemoryServer());
 		games.put("omok", new OmokServer());
 		games.put("ex", new exgameserver());
 		games.put("baseball", new BaseballServer());
@@ -121,6 +122,7 @@ public class GameServer {
 			clients.add(clientSocket);
 		} else {
 			System.out.println("게임이름을 잘못입력하셨습니다.");
+			
 		}
 	}
 

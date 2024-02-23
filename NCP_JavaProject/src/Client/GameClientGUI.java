@@ -19,14 +19,16 @@ import javax.swing.JTextField;
 import omokGame.OmokGame;
 import omokGame.OmokServer;
 import exgame.exgameclient;
-
+import memoryGame.MemoryGame;
+import memoryGame.MemoryServer;
 import baseballGame.BaseballGame;
 import exgame.exgameclient;
 import omokGame.OmokGame;
 
 public class GameClientGUI extends JFrame {
 	// 서버
-	String server = "127.0.0.1";// 서버IP
+	String server = "192.168.0.53";// 서버IP
+//	String server = "127.0.0.1";// 서버IP
 	int serverPort = 12345; // 임의 포트
 
 	// 통신
@@ -53,6 +55,7 @@ public class GameClientGUI extends JFrame {
 	private JPanel gameSelectJPanel; // 게임 선택화면
 	private JLabel gameSelectMsg;// "게임을 선택하세요"
 	private JButton selectLiarBtn; // 라이어게임 선택버튼
+	private JButton selectMemoryBtn; //메모리게임 선택버튼
 	private JButton selectBingoBtn; // 빙고게임 선택버튼
 	private JButton selectOmokBtn; // 오목게임 선택버튼
 	// 예시
@@ -98,6 +101,7 @@ public class GameClientGUI extends JFrame {
 		gameSelectMsg = new JLabel("게임을 선택하세요");
 		selectLiarBtn = new JButton("Liar Game");
 		selectBingoBtn = new JButton("Bingo Game");
+		selectMemoryBtn = new JButton("Memory Game");
 		selectOmokBtn = new JButton("omok Game");
 		selectexBtn = new JButton("ex Game");
 		selectBaseballBtn = new JButton("Baseball Game");
@@ -133,7 +137,7 @@ public class GameClientGUI extends JFrame {
 		gameSelectJPanel.setBounds(140, 87, 420, 190);
 		gameSelectMsg.setBounds(147, 6, 100, 50);
 		selectLiarBtn.setBounds(25, 54, 57, 118);
-		selectBingoBtn.setBounds(94, 54, 91, 118);
+		selectMemoryBtn.setBounds(94, 54, 91, 118);
 		selectOmokBtn.setBounds(197, 54, 69, 118);
 		selectexBtn.setBounds(289, 108, 109, 50);
 		selectBaseballBtn.setBounds(289, 54, 109, 50);
@@ -157,6 +161,7 @@ public class GameClientGUI extends JFrame {
 		gameSelectJPanel.add(gameSelectMsg);
 		gameSelectJPanel.add(selectLiarBtn);
 		gameSelectJPanel.add(selectBingoBtn);
+		gameSelectJPanel.add(selectMemoryBtn);
 		gameSelectJPanel.add(selectOmokBtn);
 		gameSelectJPanel.add(selectexBtn);
 		gameSelectJPanel.add(selectBaseballBtn);
@@ -191,6 +196,15 @@ public class GameClientGUI extends JFrame {
 				sendSelectgame(GameName);
 			}
 		});
+		selectMemoryBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				GameName = "memory";
+//				sendSelectgame(GameName);
+				
+				MemoryGame.main(null);	
+			}
+		});
 
 		// 라이어게임 선택!
 		selectOmokBtn.addActionListener(new ActionListener() {
@@ -212,6 +226,8 @@ public class GameClientGUI extends JFrame {
 			}
 		});
 
+		
+		
 		// ex 선택!
 		selectexBtn.addActionListener(new ActionListener() {
 			@Override

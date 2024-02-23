@@ -18,7 +18,7 @@ import javax.swing.Timer;
 
 import Server.Game;
 
-public class MemoryGame extends JFrame implements ActionListener, Game {
+public class MemoryGame extends JFrame implements ActionListener{
 
 	private final int BOARD_SIZE = 4; // 보드 크기
 	private final int CARD_SIZE = 100; // 카드 크기
@@ -28,11 +28,6 @@ public class MemoryGame extends JFrame implements ActionListener, Game {
 	private CardButton secondCard; // 두 번째 선택한 카드
 	private long startTime; // 게임 시작 시간
 
-	@Override
-	public void start(Socket socket) {
-		startGame();
-		MemoryGame.main(null);
-	}
 
 	public MemoryGame() {
 		setTitle("Memory Game");
