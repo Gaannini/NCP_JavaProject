@@ -30,9 +30,7 @@ public class OmokGame extends JFrame implements Game {
 		
 	}
 	public void startgame() {
-		OmokBoard();
-		OmokGame.main(null);
-		
+		new OmokGame();
 	}
 	public void OmokBoard() {
 		setTitle("===오목게임===");
@@ -51,7 +49,6 @@ public class OmokGame extends JFrame implements Game {
 				c.add(goEgg[i][j]);
 				goEgg[i][j].addActionListener(goAction);
 				goEgg[i][j].setBorderPainted(false);
-				System.out.println("착수한 위치:");
 			}
 			
 		}
@@ -177,8 +174,10 @@ public class OmokGame extends JFrame implements Game {
 
 	}
 
-	public static void main(String[] args) {
-		new OmokGame();
+	public static void main(Socket socket) {
+//		new OmokGame();
+		OmokGame omokGame = new OmokGame();
+		omokGame.startgame();	
 		
 		
 	}
