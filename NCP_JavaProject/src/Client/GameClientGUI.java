@@ -1,11 +1,14 @@
 package Client;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -16,15 +19,17 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import omokGame.OmokGame;
-import omokGame.OmokServer;
-import exgame.exgameclient;
 
 import baseballGame.BaseballGame;
-import exgame.exgameclient;
-import omokGame.OmokGame;
+import omokGame.OmokServer;
 
 public class GameClientGUI extends JFrame {
+	// 폰트 파일 경로
+	String fontFilePath = "Font/BagelFatOne-Regular.ttf";
+	Font customFont;
+
+	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+
 	// 서버
 	String server = "127.0.0.1";// 서버IP
 	int serverPort = 12345; // 임의 포트
@@ -46,24 +51,41 @@ public class GameClientGUI extends JFrame {
 	private ImageIcon gameStarticon; // 게임 시작 버튼 아이콘
 
 	private JPanel gameIdJPanel; // 아이디 입력 화면
-	private JLabel IdinputMsg; // "닉네임을 입력하세요"
+	private ImageIcon Idinputmsg;
+	private JLabel IdinputJLabel;// "닉네임을 입력하세요"
+	private ImageIcon namefield_;
+	private JLabel namefield_Label; // 닉네임 입력하는 곳 밑줄
 	private JTextField IdinputField; // 사용자가 닉네임을 입력하는 필드
+	private ImageIcon Idinputicon;
 	private JButton Idinputbtn;// 게임 시작 버튼
 
 	private JPanel gameSelectJPanel; // 게임 선택화면
+	private ImageIcon gameselecticon;
 	private JLabel gameSelectMsg;// "게임을 선택하세요"
-	private JButton selectLiarBtn; // 라이어게임 선택버튼
+	// private JButton selectLiarBtn; // 라이어게임 선택버튼
+	private ImageIcon bingoIcon;
 	private JButton selectBingoBtn; // 빙고게임 선택버튼
+	private ImageIcon bingotxtIcon;
+	private JLabel bingotxt;// 빙고 text
+	private ImageIcon omokIcon;
 	private JButton selectOmokBtn; // 오목게임 선택버튼
-	// 예시
-	private JPanel exGameJPanel;
-	private JLabel exGameJLabel;
-	private JButton selectexBtn; // 오목게임 선택버튼
+	private ImageIcon omoktxtIcon;
+	private JLabel omoktxt;// 오목 text
+	private ImageIcon baseballIcon;
 	private JButton selectBaseballBtn; // 숫자야구게임 버튼
-
+	private ImageIcon baseballtxtIcon;
+	private JLabel baseballtxt;// 야구 text
 
 	// 생성자
 	public GameClientGUI() {
+		try {
+			customFont = Font.createFont(Font.TRUETYPE_FONT, new File(fontFilePath));
+			ge.registerFont(customFont);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		init(); // 초기화 메서드 먼저 호출
 		batch(); // 배치 메서드 호출
 		setting(); // 세팅 메서드 호출
@@ -81,26 +103,41 @@ public class GameClientGUI extends JFrame {
 
 		// 게임시작화면
 		gameStartJPanel = new JPanel();
-		gameStartJPanel.setBackground(new Color(138, 195, 218));
-		gameStarticon = new ImageIcon(getClass().getResource("/Client/images/gamestartbtn.png"));
+		gameStartJPanel.setBackground(new Color(228, 227, 255));
+		gameStarticon = new ImageIcon(getClass().getResource("/Client/images/gamestartbtn0.png"));
 		gameStartbtn = new JButton(gameStarticon);
 
 		// 닉네임입력 화면
 		gameIdJPanel = new JPanel();
-		gameIdJPanel.setBackground(new Color(138, 195, 218));
-		IdinputMsg = new JLabel("닉네임을 입력하세요.");
-		IdinputField = new JTextField();
-		Idinputbtn = new JButton("입장");
+		gameIdJPanel.setBackground(new Color(228, 227, 255));
+		Idinputmsg = new ImageIcon(getClass().getResource("/Client/images/nameinputimg.png"));
+		IdinputJLabel = new JLabel(Idinputmsg);
+		namefield_ = new ImageIcon(getClass().getResource("/Client/images/__.png"));
+		namefield_Label = new JLabel(namefield_);
+		IdinputField = new JTextField(30);
+		Idinputicon = new ImageIcon(getClass().getResource("/Client/images/nameinputbtn.png"));
+		Idinputbtn = new JButton(Idinputicon);
 
 		// 게임선택화면(라이어, 빙고, 오목 중 한가지 선택하는 버튼구현)
 		gameSelectJPanel = new JPanel();
-		gameSelectJPanel.setBackground(new Color(138, 195, 218));
-		gameSelectMsg = new JLabel("게임을 선택하세요");
-		selectLiarBtn = new JButton("Liar Game");
-		selectBingoBtn = new JButton("Bingo Game");
-		selectOmokBtn = new JButton("omok Game");
-		selectexBtn = new JButton("ex Game");
-		selectBaseballBtn = new JButton("Baseball Game");
+		gameSelectJPanel.setBackground(new Color(228, 227, 255));
+		gameselecticon = new ImageIcon(getClass().getResource("/Client/images/gameselectmsg.png"));
+		gameSelectMsg = new JLabel(gameselecticon);
+
+		bingoIcon = new ImageIcon(getClass().getResource("/Client/images/memorygame.png"));
+		selectBingoBtn = new JButton(bingoIcon);
+		bingotxtIcon = new ImageIcon(getClass().getResource("/Client/images/memorytxt.png"));
+		bingotxt = new JLabel(bingotxtIcon);
+
+		omokIcon = new ImageIcon(getClass().getResource("/Client/images/omokgame.png"));
+		selectOmokBtn = new JButton(omokIcon);
+		omoktxtIcon = new ImageIcon(getClass().getResource("/Client/images/omoktxt.png"));
+		omoktxt = new JLabel(omoktxtIcon);
+
+		baseballIcon = new ImageIcon(getClass().getResource("/Client/images/baseballgame.png"));
+		selectBaseballBtn = new JButton(baseballIcon);
+		baseballtxtIcon = new ImageIcon(getClass().getResource("/Client/images/baseballtxt.png"));
+		baseballtxt = new JLabel(baseballtxtIcon);
 
 	}
 
@@ -114,29 +151,51 @@ public class GameClientGUI extends JFrame {
 
 		// 게임시작화면
 		gameStartJPanel.setLayout(null);
-		gameStartJPanel.setBounds(140, 87, 420, 190);
-		gameStartbtn.setBounds(40, 40, 340, 110);
+		gameStartJPanel.setBounds(165, 140, 380, 240);
+		gameStartbtn.setBounds(50, 55, 270, 110);
 		gameStarticon = ImageSetSize(gameStarticon, 360, 130);
 		gameStartbtn.setVisible(true);
 		gameStartJPanel.setVisible(true);// 시작때 화면 표시
 
 		// 닉네임 입력 화면
 		gameIdJPanel.setLayout(null);
-		gameIdJPanel.setBounds(140, 87, 420, 190);
-		IdinputMsg.setBounds(160, 20, 165, 50);
-		IdinputField.setBounds(120, 70, 191, 50);
-		Idinputbtn.setBounds(160, 130, 109, 50);
+		gameIdJPanel.setBounds(165, 140, 380, 240);
+		IdinputJLabel.setBounds(15, 35, 350, 50);
+		namefield_Label.setBounds(40, 140, 240, 80);
+		IdinputField.setBounds(50, 105, 250, 80);
+		IdinputField.setOpaque(false);// 입력창 투명하게
+		IdinputField.setBackground(new Color(0, 0, 0, 0));
+		IdinputField.setBorder(null);
+		IdinputField.setFont(customFont.deriveFont(Font.PLAIN, 40)); // 폰트설정
+		Idinputbtn.setBounds(290, 105, 80, 80);
+		Idinputbtn.setOpaque(false);// 버튼 투명하게
+		Idinputbtn.setContentAreaFilled(false);
+		Idinputbtn.setBorderPainted(false);
 		gameIdJPanel.setVisible(false); // 시작 시에는 화면에 표시되지 않도록 설정
 
 		// 게임선택화면
 		gameSelectJPanel.setLayout(null);
-		gameSelectJPanel.setBounds(140, 87, 420, 190);
-		gameSelectMsg.setBounds(147, 6, 100, 50);
-		selectLiarBtn.setBounds(25, 54, 57, 118);
-		selectBingoBtn.setBounds(94, 54, 91, 118);
-		selectOmokBtn.setBounds(197, 54, 69, 118);
-		selectexBtn.setBounds(289, 108, 109, 50);
-		selectBaseballBtn.setBounds(289, 54, 109, 50);
+		gameSelectJPanel.setBounds(165, 140, 380, 240);
+		gameSelectMsg.setBounds(43, 15, 300, 50);
+
+		selectBingoBtn.setBounds(13, 80, 110, 110);
+		selectBingoBtn.setOpaque(false);// 버튼 투명하게
+		selectBingoBtn.setContentAreaFilled(false);
+		selectBingoBtn.setBorderPainted(false);
+		bingotxt.setBounds(16, 190, 110, 30);
+
+		selectOmokBtn.setBounds(140, 79, 110, 110);
+		selectOmokBtn.setOpaque(false);// 버튼 투명하게
+		selectOmokBtn.setContentAreaFilled(false);
+		selectOmokBtn.setBorderPainted(false);
+		omoktxt.setBounds(140, 190, 110, 30);
+
+		selectBaseballBtn.setBounds(262, 80, 110, 110);
+		selectBaseballBtn.setOpaque(false);// 버튼 투명하게
+		selectBaseballBtn.setContentAreaFilled(false);
+		selectBaseballBtn.setBorderPainted(false);
+		baseballtxt.setBounds(262, 190, 110, 30);
+
 		gameSelectJPanel.setVisible(false); // 시작 시에는 화면에 표시되지 않도록 설정
 	}
 
@@ -150,16 +209,18 @@ public class GameClientGUI extends JFrame {
 		gameStartJPanel.add(gameStartbtn);
 		gameStartbtn.setIcon(gameStarticon);
 
-		gameIdJPanel.add(IdinputMsg);
+		gameIdJPanel.add(IdinputJLabel);
+		gameIdJPanel.add(namefield_Label);
 		gameIdJPanel.add(IdinputField);
 		gameIdJPanel.add(Idinputbtn);
 
 		gameSelectJPanel.add(gameSelectMsg);
-		gameSelectJPanel.add(selectLiarBtn);
 		gameSelectJPanel.add(selectBingoBtn);
 		gameSelectJPanel.add(selectOmokBtn);
-		gameSelectJPanel.add(selectexBtn);
 		gameSelectJPanel.add(selectBaseballBtn);
+		gameSelectJPanel.add(bingotxt);
+		gameSelectJPanel.add(omoktxt);
+		gameSelectJPanel.add(baseballtxt);
 	}
 
 	// 버튼 클릭 이벤트
@@ -209,16 +270,6 @@ public class GameClientGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				GameName = "omok";
 				sendSelectgame(GameName);
-			}
-		});
-
-		// ex 선택!
-		selectexBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				GameName = "ex";
-				sendSelectgame(GameName);
-				exgameclient exgame = new exgameclient(socket);
 			}
 		});
 
@@ -282,7 +333,7 @@ public class GameClientGUI extends JFrame {
 
 	// 이미지 삽입 패널 클래스(게임배경)
 	class MainPanel extends JPanel {
-		private ImageIcon icon = new ImageIcon(getClass().getResource("/Client/images/mainbg.png"));
+		private ImageIcon icon = new ImageIcon(getClass().getResource("/Client/images/gamemainbg.png"));
 		private Image imgMain = icon.getImage();
 
 		public void paintComponent(Graphics g) {
