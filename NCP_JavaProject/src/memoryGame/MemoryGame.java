@@ -28,7 +28,6 @@ public class MemoryGame extends JFrame implements ActionListener{
 	private CardButton secondCard; // 두 번째 선택한 카드
 	private long startTime; // 게임 시작 시간
 
-
 	public MemoryGame() {
 		setTitle("Memory Game");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -126,13 +125,7 @@ public class MemoryGame extends JFrame implements ActionListener{
 	}
 
 	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				MemoryGame game = new MemoryGame();
-				game.setVisible(true);
-			}
-		});
+		
 	}
 
 }
