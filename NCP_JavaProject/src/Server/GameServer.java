@@ -126,7 +126,7 @@ public class GameServer {
 
 	public static void main(String[] args) {
 		GameServer gameServer = new GameServer();
-		gameServer.startServer(12345);
+		gameServer.startServer(4001);
 
 	}
 
