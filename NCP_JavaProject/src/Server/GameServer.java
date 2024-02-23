@@ -11,11 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import baseballGame.BaseballGame;
 import bingoGame.BingoGame;
 import exgame.exgameserver;
 import omokGame.OmokGame;
-import baseballGame.BaseballGame;
+import baseballGame.BaseballServer;
 
 public class GameServer {
 	private Map<String, List<Socket>> gameClients; // 클라이언트들의 소켓을 저장하는 리스트
@@ -31,7 +30,7 @@ public class GameServer {
 		games.put("bingo", new BingoGame());
 		games.put("omok", new OmokGame());
 		games.put("ex", new exgameserver());
-		games.put("baseball", new BaseballGame());
+		games.put("baseball", new BaseballServer());
 	}
 
 	// TODO : 까불지않기!!
@@ -68,26 +67,30 @@ public class GameServer {
 
 		@Override
 		public void run() {
-			try {
-				reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				writer = new PrintWriter(socket.getOutputStream(), true);
-				
-
-				String clientMsg;
-				while ((clientMsg = reader.readLine()) != null) {
-					String[] parsedMsg = clientMsg.split("&");
-					// Client Thread에서 동작하는 프로토콜
-					handleProtocol(parsedMsg);
-					// 받은 클래스 이름을 실행하고 결과를 클라이언트에게 다시 전송
-			        PrintWriter out = new PrintWriter(clientsocket.getOutputStream());
-			        out.println("서버에서 실행된 결과");
-					 
-
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		    try {
+		        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		        writer = new PrintWriter(socket.getOutputStream(), true);
+		        
+		        String clientMsg;
+		        while ((clientMsg = reader.readLine()) != null) {
+		            String[] parsedMsg = clientMsg.split("&");
+		            // Client Thread에서 동작하는 프로토콜
+		            handleProtocol(parsedMsg);
+		            // 받은 클래스 이름을 실행하고 결과를 클라이언트에게 다시 전송
+		            PrintWriter out = new PrintWriter(socket.getOutputStream());
+		            out.println("서버에서 실행된 결과");
+		        }
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    } finally {
+		        try {
+		            socket.close();
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		        }
+		    }
 		}
+
 
 		private void handleProtocol(String[] parsedMsg) throws IOException {
 			if (parsedMsg.length >= 2) {
@@ -104,10 +107,10 @@ public class GameServer {
 					// sendClientList();
 					break;
 				case "gamename":
-					System.out.println(clientId + "님이 " + data + "게임을 선택하셨습니다.");
-					startGame(data);
-				
-					break;
+				    System.out.println(clientId + "님이 " + data + "게임을 선택하셨습니다.");
+				    startGame(data, socket); // 클라이언트의 소켓 정보 전달
+				    break;
+
 				// Handle other protocols
 				}
 			}
@@ -115,21 +118,21 @@ public class GameServer {
 	}
 
 	// 사용자가 선택한 게임 시작 메소드
-	public void startGame(String gameName) {
-		Game selectedGame = games.get(gameName.toLowerCase());
-		if (selectedGame != null) {
-			selectedGame.start(clientsocket);
-			List<Socket> clients = gameClients.computeIfAbsent(gameName, k -> new ArrayList<>());
-			clients.add(clientsocket);
-		} else {
-			System.out.println("게임이름을 잘못입력하셨습니다.");
-		}
+	public void startGame(String gameName, Socket clientSocket) {
+	    Game selectedGame = games.get(gameName.toLowerCase());
+	    if (selectedGame != null) {
+	        selectedGame.start(clientSocket);
+	        List<Socket> clients = gameClients.computeIfAbsent(gameName, k -> new ArrayList<>());
+	        clients.add(clientSocket);
+	    } else {
+	        System.out.println("게임이름을 잘못입력하셨습니다.");
+	    }
 	}
 
-	public static void main(String[] args){
-		GameServer gameServer = new GameServer();
-		gameServer.startServer(12345);
-		
-		
+	public static void main(String[] args) {
+	    GameServer gameServer = new GameServer();
+	    gameServer.startServer(12345);
+	    
 	}
+
 }

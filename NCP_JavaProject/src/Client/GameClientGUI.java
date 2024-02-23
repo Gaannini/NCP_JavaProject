@@ -18,7 +18,7 @@ import baseballGame.BaseballGame;
 
 public class GameClientGUI extends JFrame {
 	// 서버
-	String server = "192.168.0.34";// 서버IP
+	String server = "127.0.0.1";// 서버IP
 	int serverPort = 12345; // 임의 포트
 
 	// 통신
@@ -111,7 +111,7 @@ public class GameClientGUI extends JFrame {
 		selectBingoBtn.setBounds(113, 122, 191, 50);
 		selectOmokBtn.setBounds(138, 225, 109, 50);
 		selectexBtn.setBounds(138, 275, 109, 50);
-		selectBaseballBtn.setBounds(138, 275, 109, 50);
+		selectBaseballBtn.setBounds(138, 400, 109, 50);
 
 		// 예시게임
 //		getContentPane().add(exGameJPanel);
@@ -191,11 +191,12 @@ public class GameClientGUI extends JFrame {
 		});
 
 		// 숫자 야구 게임 선택!
-		selectexBtn.addActionListener(new ActionListener() {
+		selectBaseballBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				GameName = "baseball";
 				sendSelectgame(GameName);
+				BaseballGame baseball = new BaseballGame(socket);
 			}
 		});
 
