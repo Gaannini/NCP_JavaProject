@@ -74,7 +74,7 @@ public class GameClientGUI extends JFrame {
 
 		// 게임시작화면
 		gameStartJPanel = new JPanel();
-		gameStartJPanel.setBackground(new Color(0, 195, 218));
+		gameStartJPanel.setBackground(new Color(138, 195, 218));
 		gameStarticon = new ImageIcon(getClass().getResource("/Client/images/gamestartbtn.png"));
 		gameStartbtn = new JButton(gameStarticon);
 
@@ -107,7 +107,8 @@ public class GameClientGUI extends JFrame {
 
 		// 게임시작화면
 		gameStartJPanel.setLayout(null);
-		gameStartbtn.setBounds(150, 117, 360, 130);
+		gameStartJPanel.setBounds(140, 87, 420, 190);
+		gameStartbtn.setBounds(40, 40, 340, 110);
 		gameStarticon = ImageSetSize(gameStarticon, 360, 130);
 		gameStartbtn.setVisible(true);
 		gameStartJPanel.setVisible(true);// 시작때 화면 표시
@@ -115,20 +116,20 @@ public class GameClientGUI extends JFrame {
 		// 닉네임 입력 화면
 		gameIdJPanel.setLayout(null);
 		gameIdJPanel.setBounds(140, 87, 420, 190);
-		IdinputMsg.setBounds(160, 52, 165, 50);
-		IdinputField.setBounds(170, 101, 191, 50);
-		Idinputbtn.setBounds(169, 163, 109, 50);
+		IdinputMsg.setBounds(160, 20, 165, 50);
+		IdinputField.setBounds(120, 70, 191, 50);
+		Idinputbtn.setBounds(160, 130, 109, 50);
 		gameIdJPanel.setVisible(false); // 시작 시에는 화면에 표시되지 않도록 설정
 
 		// 게임선택화면
 		gameSelectJPanel.setLayout(null);
 		gameSelectJPanel.setBounds(140, 87, 420, 190);
 		gameSelectMsg.setBounds(147, 6, 100, 50);
-		selectLiarBtn.setBounds(25, 54, 100, 118);
-		selectBingoBtn.setBounds(126, 54, 141, 118);
-		selectOmokBtn.setBounds(279, 54, 135, 118);
-		selectexBtn.setBounds(138, 275, 109, 50);
-		selectBaseballBtn.setBounds(138, 325, 109, 50);
+		selectLiarBtn.setBounds(25, 54, 57, 118);
+		selectBingoBtn.setBounds(94, 54, 91, 118);
+		selectOmokBtn.setBounds(197, 54, 69, 118);
+		selectexBtn.setBounds(289, 108, 109, 50);
+		selectBaseballBtn.setBounds(289, 54, 109, 50);
 		gameSelectJPanel.setVisible(false); // 시작 시에는 화면에 표시되지 않도록 설정
 	}
 
