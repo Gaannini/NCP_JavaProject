@@ -20,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import baseballGame.BaseballGame;
+import omokGame.OmokClient;
 import omokGame.OmokServer;
 
 public class GameClientGUI extends JFrame {
@@ -258,8 +259,8 @@ public class GameClientGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				GameName = "omok";
 				sendSelectgame(GameName);
-				OmokServer omokServer = new OmokServer();
-				omokServer.startgame();
+				OmokClient omokClient = new OmokClient(socket);
+				
 			}
 		});
 
