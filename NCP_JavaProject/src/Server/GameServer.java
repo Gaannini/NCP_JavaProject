@@ -11,11 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import baseballGame.BaseballGame;
 import bingoGame.BingoGame;
 import exgame.exgameserver;
 import omokGame.OmokGame;
-import baseballGame.BaseballGame;
 
 public class GameServer {
 	private Map<String, List<Socket>> gameClients; // 클라이언트들의 소켓을 저장하는 리스트
@@ -31,7 +29,7 @@ public class GameServer {
 		games.put("bingo", new BingoGame());
 		games.put("omok", new OmokGame());
 		games.put("ex", new exgameserver());
-		games.put("baseball", new BaseballGame());
+		// games.put("baseball", new BaseballGame());
 	}
 
 	// TODO : 까불지않기!!
@@ -71,7 +69,6 @@ public class GameServer {
 			try {
 				reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				writer = new PrintWriter(socket.getOutputStream(), true);
-				
 
 				String clientMsg;
 				while ((clientMsg = reader.readLine()) != null) {
@@ -79,9 +76,8 @@ public class GameServer {
 					// Client Thread에서 동작하는 프로토콜
 					handleProtocol(parsedMsg);
 					// 받은 클래스 이름을 실행하고 결과를 클라이언트에게 다시 전송
-			        PrintWriter out = new PrintWriter(clientsocket.getOutputStream());
-			        out.println("서버에서 실행된 결과");
-					 
+					PrintWriter out = new PrintWriter(clientsocket.getOutputStream());
+					out.println("서버에서 실행된 결과");
 
 				}
 			} catch (Exception e) {
@@ -106,7 +102,7 @@ public class GameServer {
 				case "gamename":
 					System.out.println(clientId + "님이 " + data + "게임을 선택하셨습니다.");
 					startGame(data);
-				
+
 					break;
 				// Handle other protocols
 				}
@@ -126,10 +122,9 @@ public class GameServer {
 		}
 	}
 
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		GameServer gameServer = new GameServer();
 		gameServer.startServer(12345);
-		
-		
+
 	}
 }
