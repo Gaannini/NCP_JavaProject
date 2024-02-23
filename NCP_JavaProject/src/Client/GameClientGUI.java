@@ -17,6 +17,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import omokGame.OmokGame;
+import baseballGame.BaseballGame;
+import omokGame.OmokClient;
 import omokGame.OmokServer;
 import exgame.exgameclient;
 import memoryGame.MemoryGame;
@@ -212,8 +214,8 @@ public class GameClientGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				GameName = "omok";
 				sendSelectgame(GameName);
-				OmokServer omokServer = new OmokServer();
-				omokServer.startgame();
+				OmokClient omokClient = new OmokClient(socket);
+				
 			}
 		});
 

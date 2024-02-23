@@ -39,13 +39,13 @@ public class OmokServer implements Game {
 	            System.err.println("서버 오류: " + e.getMessage());
 	        }
 	    }
-	OmokGame omokGame = new OmokGame();
+	//OmokGame omokGame = new OmokGame();
 	@Override
 	public void start(Socket socket) {
 		this.socket = socket;
 		new clientInfo(socket).start(); // 클라이언트 연결을 처리하는 쓰레드 시작
 		
-		omokGame.startgame();
+		//omokGame.startgame();
 	}
 
 	public class clientInfo extends Thread {
