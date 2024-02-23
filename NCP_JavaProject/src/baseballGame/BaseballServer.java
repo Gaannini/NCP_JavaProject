@@ -8,13 +8,17 @@ import java.net.Socket;
 import Server.Game;
 
 public class BaseballServer implements Game {
+	// 통신 
 	private Socket socket;
+	
+	// 난수를 저장할 배열 
+	private int[] randomNumbers;
 
 	@Override
 	public void start(Socket socket) {
 		this.socket = socket;
-		// new exgameserver();
 		new clientInfo(socket).start(); // 클라이언트 연결을 처리하는 쓰레드 시작
+		getRandomNum();
 	}
 
 	public class clientInfo extends Thread {
@@ -31,43 +35,72 @@ public class BaseballServer implements Game {
 		@Override
 		public void run() {
 			try {
+				// 클라이언트로부터 입력을 읽고 클라이언트에게 추력을 보내기 위해 초기화 
 				reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				writer = new PrintWriter(socket.getOutputStream(), true);
 
+				/* 메세지 처리 루프
+				 * 클라이언트로부터 메시지를 읽고, 이를 '&'를 기준으로 나누어 
+				 * handleProtocol() 메소드 호출 
+				 */
 				String clientMsg;
 				while ((clientMsg = reader.readLine()) != null) {
 					String[] parsedMsg = clientMsg.split("&");
 					// Client Thread에서 동작하는 프로토콜
-					A(parsedMsg);
-
+					handleProtocol(parsedMsg);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 
-		private void A(String[] parsedMsg) {
+		// 프로토콜 처리: 받은 메시지를 프로토콜에 따라 처리한다. 
+		private void handleProtocol(String[] parsedMsg) {
 			if (parsedMsg.length >= 2) {
 				String protocol = parsedMsg[0];
 				String data = parsedMsg[1];
 
 				switch (protocol) {
-				case "ex":
+				case "baseball":
 					exMsg = data;
-					// clientIds.put(socket, clientId);
 					System.out.println(exMsg + "확인");
-
-					// notifyClients(clientId + " is enter the room.", "ID");
-					// sendClientList();
 					break;
-//				case "gamename":
-//					System.out.println(clientId + "님이 " + data + "게임을 선택하셨습니다.");
-//					// startGame(data);
-//					break;
-//				// Handle other protocols
 				}
 			}
 		}
+	}
+	
+	// 난수 생성 메소드 
+	public static int[] getRandomNum() {
+		int[] numArr = new int[3];
+		
+		// 1번째 난수 생성 
+		numArr[0] = (int)(Math.random()*10); 
+		
+		// 2번째 난수 생성
+		boolean isRun = true;
+		while(isRun) {
+			int rNum = (int)(Math.random()*10);
+			// 만약, 1번째 값과 같으면 다시 반복해서 생성하라!!
+			if(rNum == numArr[0])
+				continue;
+			numArr[1] = rNum;
+			isRun = false;
+		}
+		
+		// 3번째 난수 생성
+		isRun = true;
+		while(isRun) {
+			int rNum = (int)(Math.random()*10);
+			// 1번째 값 또는 2번째 값이 같으면 다시 반복해서 생성하라!!
+			if(rNum == numArr[0] || rNum == numArr[1])
+				continue;
+			numArr[2] = rNum;
+			isRun = false;
+			System.out.println("");
+		}
+		
+		return numArr;
 	}
 
 }

@@ -11,6 +11,7 @@ public class BaseballGame extends JFrame {
 	// 통신
 	private Socket socket;
 	private PrintWriter printWriter;
+	private BufferedReader bufferedReader;
 
 	// 폰트 크기 설정
 	private Font smallFont; // 16px
@@ -94,7 +95,6 @@ public class BaseballGame extends JFrame {
 		batch();
 		listener();
 		setVisible(true);
-		System.out.println("BaseballGame 생성자 실행");
 	}
 
 	private void init() {
@@ -187,8 +187,6 @@ public class BaseballGame extends JFrame {
 
 		namePanel.setVisible(true);
 		namePanel.setBounds(170, 37, 280, 50);
-	//	correctAnswer.setVisible(true);
-	//	correctAnswer.setBounds(500, 37, 280, 50);
 
 		numPanel.setVisible(true);
 		numPanel.setBounds(26, 112, 570, 70);
@@ -274,6 +272,7 @@ public class BaseballGame extends JFrame {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 		button1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
