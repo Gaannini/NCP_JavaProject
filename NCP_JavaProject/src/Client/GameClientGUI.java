@@ -183,7 +183,7 @@ public class GameClientGUI extends JFrame {
 			}
 		});
 
-		// 라이어게임 선택!
+		// 빙고게임 선택!
 		selectBingoBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -192,7 +192,7 @@ public class GameClientGUI extends JFrame {
 			}
 		});
 
-		// 라이어게임 선택!
+		// 오목게임 선택!
 		selectOmokBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -203,14 +203,14 @@ public class GameClientGUI extends JFrame {
 			}
 		});
 
-		// 오목게임 선택!
-		selectOmokBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				GameName = "omok";
-				sendSelectgame(GameName);
-			}
-		});
+//		// 오목게임 선택!
+//		selectOmokBtn.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				GameName = "omok";
+//				sendSelectgame(GameName);
+//			}
+//		});
 
 		// ex 선택!
 		selectexBtn.addActionListener(new ActionListener() {

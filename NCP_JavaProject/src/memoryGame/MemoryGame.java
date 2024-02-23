@@ -30,8 +30,13 @@ public class MemoryGame extends JFrame implements ActionListener, Game {
 
 	@Override
 	public void start(Socket socket) {
-		startGame();
-		MemoryGame.main(null);
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				MemoryGame game = new MemoryGame();
+				game.setVisible(true);
+			}
+		});
 	}
 
 	public MemoryGame() {
@@ -131,13 +136,7 @@ public class MemoryGame extends JFrame implements ActionListener, Game {
 	}
 
 	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				MemoryGame game = new MemoryGame();
-				game.setVisible(true);
-			}
-		});
+		
 	}
 
 }
