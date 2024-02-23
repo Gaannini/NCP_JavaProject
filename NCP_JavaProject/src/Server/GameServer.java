@@ -11,10 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import baseballGame.BaseballServer;
 import bingoGame.BingoGame;
-import catchmind.CatchmindServer;
 import exgame.exgameserver;
-import omokGame.OmokGame;
 import omokGame.OmokServer;
 
 public class GameServer {
@@ -31,8 +30,7 @@ public class GameServer {
 		games.put("bingo", new BingoGame());
 		games.put("omok", new OmokServer());
 		games.put("ex", new exgameserver());
-		games.put("catch", new CatchmindServer());
-
+		games.put("baseball", new BaseballServer());
 
 	}
 
@@ -73,7 +71,6 @@ public class GameServer {
 			try {
 				reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				writer = new PrintWriter(socket.getOutputStream(), true);
-				
 
 				String clientMsg;
 				while ((clientMsg = reader.readLine()) != null) {
@@ -81,9 +78,8 @@ public class GameServer {
 					// Client Thread에서 동작하는 프로토콜
 					handleProtocol(parsedMsg);
 					// 받은 클래스 이름을 실행하고 결과를 클라이언트에게 다시 전송
-			        PrintWriter out = new PrintWriter(clientsocket.getOutputStream());
-			        out.println("서버에서 실행된 결과");
-					 
+					PrintWriter out = new PrintWriter(clientsocket.getOutputStream());
+					out.println("서버에서 실행된 결과");
 
 				}
 			} catch (Exception e) {
@@ -107,9 +103,9 @@ public class GameServer {
 					break;
 				case "gamename":
 					System.out.println(clientId + "님이 " + data + "게임을 선택하셨습니다.");
-					startGame(data);
-				
+					startGame(data, socket); // 클라이언트의 소켓 정보 전달
 					break;
+
 				// Handle other protocols
 				}
 			}
@@ -117,21 +113,21 @@ public class GameServer {
 	}
 
 	// 사용자가 선택한 게임 시작 메소드
-	public void startGame(String gameName) {
+	public void startGame(String gameName, Socket clientSocket) {
 		Game selectedGame = games.get(gameName.toLowerCase());
 		if (selectedGame != null) {
-			selectedGame.start(clientsocket);
+			selectedGame.start(clientSocket);
 			List<Socket> clients = gameClients.computeIfAbsent(gameName, k -> new ArrayList<>());
-			clients.add(clientsocket);
+			clients.add(clientSocket);
 		} else {
 			System.out.println("게임이름을 잘못입력하셨습니다.");
 		}
 	}
 
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		GameServer gameServer = new GameServer();
 		gameServer.startServer(12345);
-		
-		
+
 	}
+
 }
