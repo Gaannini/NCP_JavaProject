@@ -1,15 +1,11 @@
 package baseballGame;
 
-import javax.management.monitor.MonitorSettingException;
+
 import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.*;
-import javax.swing.border.*;
-
-import Server.Game;
 
 public class BaseballGame extends JFrame {
 	// 통신
@@ -81,7 +77,7 @@ public class BaseballGame extends JFrame {
 	
 	// 이미지 삽입 패널 클래스
 	class NamePanel extends JPanel {
-		private ImageIcon icon = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/title.jpeg");
+		private ImageIcon icon = new ImageIcon(getClass().getResource("/baseballGame/imgs/title.jpeg"));
 		private Image imgMain = icon.getImage();
 
 		public void paintComponent(Graphics g) {
@@ -104,6 +100,8 @@ public class BaseballGame extends JFrame {
 	private void init() {
 		// 이미지 삽입 패널
 		namePanel = new NamePanel();
+		namePanel.setBackground(new Color(192, 192, 192));
+		namePanel.setForeground(new Color(169, 169, 169));
 		
 		// 패널
 		mainPanel = new JPanel();
@@ -147,16 +145,16 @@ public class BaseballGame extends JFrame {
 		keyboardPanel.setBackground(new Color(255, 255, 255));
 
 		// 이미지
-		icon0 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon0.jpeg");
-		icon1 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon1.jpeg");
-		icon2 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon2.jpeg");
-		icon3 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon3.jpeg");
-		icon4 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon4.jpeg");
-		icon5 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon5.jpeg");
-		icon6 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon6.jpeg");
-		icon7 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon7.jpeg");
-		icon8 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon8.jpeg");
-		icon9 = new ImageIcon("/Users/chaereemee/NCamp/NCP_JavaProject/NCP_JavaProject/bgImg/icon9.jpeg");
+		icon0 = new ImageIcon(getClass().getResource("/baseballGame/imgs/icon0.jpeg"));
+		icon1 = new ImageIcon(getClass().getResource("/baseballGame/imgs/icon1.jpeg"));
+		icon2 = new ImageIcon(getClass().getResource("/baseballGame/imgs/icon2.jpeg"));
+		icon3 = new ImageIcon(getClass().getResource("/baseballGame/imgs/icon3.jpeg"));
+		icon4 = new ImageIcon(getClass().getResource("/baseballGame/imgs/icon4.jpeg"));
+		icon5 = new ImageIcon(getClass().getResource("/baseballGame/imgs/icon5.jpeg"));
+		icon6 = new ImageIcon(getClass().getResource("/baseballGame/imgs/icon6.jpeg"));
+		icon7 = new ImageIcon(getClass().getResource("/baseballGame/imgs/icon7.jpeg"));
+		icon8 = new ImageIcon(getClass().getResource("/baseballGame/imgs/icon8.jpeg"));
+		icon9 = new ImageIcon(getClass().getResource("/baseballGame/imgs/icon9.jpeg"));
 
 		// 버튼
 		button0 = new JButton(icon0);
@@ -171,13 +169,12 @@ public class BaseballGame extends JFrame {
 		button9 = new JButton(icon9);
 
 		// 라벨
-		namePanel.setBackground(new Color(192, 192, 192));
-		namePanel.setForeground(new Color(169, 169, 169));
+		
 
 		// 폰트
-		smallFont = new Font("배달의민족 주아", Font.PLAIN, 16);
-		mediumFont = new Font("배달의민족 주아", Font.PLAIN, 24);
-		largeFont = new Font("배달의민족 주아", Font.PLAIN, 36);
+		smallFont = new Font("맑은고딕", Font.PLAIN, 16);
+		mediumFont = new Font("맑은고딕", Font.PLAIN, 24);
+		largeFont = new Font("맑은고딕", Font.PLAIN, 36);
 	}
 
 	private void setting() {
@@ -188,7 +185,10 @@ public class BaseballGame extends JFrame {
 
 		setContentPane(mainPanel);
 
+		namePanel.setVisible(true);
 		namePanel.setBounds(170, 37, 280, 50);
+	//	correctAnswer.setVisible(true);
+	//	correctAnswer.setBounds(500, 37, 280, 50);
 
 		numPanel.setVisible(true);
 		numPanel.setBounds(26, 112, 570, 70);
