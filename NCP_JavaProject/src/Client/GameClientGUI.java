@@ -16,13 +16,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import omokGame.OmokGame;
-import omokGame.OmokServer;
-import exgame.exgameclient;
 
 import baseballGame.BaseballGame;
 import exgame.exgameclient;
-import omokGame.OmokGame;
+import omokGame.OmokServer;
 
 public class GameClientGUI extends JFrame {
 	// 서버

@@ -1,14 +1,44 @@
 package omokGame;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 import Server.Game;
 
 public class OmokServer implements Game {
 	private Socket socket;
+	
+	  public static void main(String[] args) {
+	        final int PORT = 7878; // 사용할 포트 번호
+
+	        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+	            System.out.println("서버가 포트 " + PORT + "에서 실행 중...");
+
+	            // 클라이언트의 연결을 수신하고, 클라이언트와 통신할 소켓을 얻습니다.
+	            Socket clientSocket = serverSocket.accept();
+	            System.out.println("클라이언트가 연결되었습니다.");
+
+	            // 클라이언트와 데이터를 주고받을 입력 및 출력 스트림을 얻습니다.
+	            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+	            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+	            // 클라이언트에게 메시지를 전송합니다.
+	            out.println("서버로부터의 메시지: 연결이 성공적으로 수립되었습니다.");
+
+	            // 클라이언트로부터 메시지를 수신하고 출력합니다.
+	            String clientMessage = in.readLine();
+	            System.out.println("클라이언트로부터의 메시지: " + clientMessage);
+
+	            // 클라이언트와 통신을 종료합니다.
+	            clientSocket.close();
+	        } catch (IOException e) {
+	            System.err.println("서버 오류: " + e.getMessage());
+	        }
+	    }
 	OmokGame omokGame = new OmokGame();
 	@Override
 	public void start(Socket socket) {
@@ -63,6 +93,7 @@ public class OmokServer implements Game {
 			}
 		}
 	}
+	
 
 	public void startgame() {
 		new OmokGame();
