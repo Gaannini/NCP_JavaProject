@@ -202,7 +202,7 @@ public class GameClientGUI extends JFrame {
 				GameName = "memory";
 //				sendSelectgame(GameName);
 				
-				MemoryGame.main(null);	
+				MemoryGame.main(null);
 			}
 		});
 
