@@ -16,6 +16,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import omokGame.OmokGame;
+import omokGame.OmokServer;
+import exgame.exgameclient;
 
 import baseballGame.BaseballGame;
 import exgame.exgameclient;
@@ -52,8 +55,12 @@ public class GameClientGUI extends JFrame {
 	private JButton selectLiarBtn; // 라이어게임 선택버튼
 	private JButton selectBingoBtn; // 빙고게임 선택버튼
 	private JButton selectOmokBtn; // 오목게임 선택버튼
+	// 예시
+	private JPanel exGameJPanel;
+	private JLabel exGameJLabel;
 	private JButton selectexBtn; // 오목게임 선택버튼
 	private JButton selectBaseballBtn; // 숫자야구게임 버튼
+
 
 	// 생성자
 	public GameClientGUI() {
@@ -91,7 +98,7 @@ public class GameClientGUI extends JFrame {
 		gameSelectMsg = new JLabel("게임을 선택하세요");
 		selectLiarBtn = new JButton("Liar Game");
 		selectBingoBtn = new JButton("Bingo Game");
-		selectOmokBtn = new JButton("Omok Game");
+		selectOmokBtn = new JButton("omok Game");
 		selectexBtn = new JButton("ex Game");
 		selectBaseballBtn = new JButton("Baseball Game");
 
@@ -191,12 +198,12 @@ public class GameClientGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				GameName = "omok";
 				sendSelectgame(GameName);
-				OmokGame omok = new OmokGame();
-				omok.startgame();
+				OmokServer omokServer = new OmokServer();
+				omokServer.startgame();
 			}
 		});
 
-		// 라이어게임 선택!
+		// 오목게임 선택!
 		selectOmokBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -205,7 +212,7 @@ public class GameClientGUI extends JFrame {
 			}
 		});
 
-		// 라이어게임 선택!
+		// ex 선택!
 		selectexBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

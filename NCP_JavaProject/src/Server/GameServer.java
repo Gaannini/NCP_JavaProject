@@ -14,7 +14,7 @@ import java.util.Map;
 import baseballGame.BaseballServer;
 import bingoGame.BingoGame;
 import exgame.exgameserver;
-import omokGame.OmokGame;
+import omokGame.OmokServer;
 
 public class GameServer {
 	private Map<String, List<Socket>> gameClients; // 클라이언트들의 소켓을 저장하는 리스트
@@ -28,9 +28,10 @@ public class GameServer {
 		clientIds = new HashMap<>();
 		games = new HashMap<String, Game>();
 		games.put("bingo", new BingoGame());
-		games.put("omok", new OmokGame());
+		games.put("omok", new OmokServer());
 		games.put("ex", new exgameserver());
 		games.put("baseball", new BaseballServer());
+
 	}
 
 	// TODO : 까불지않기!!
