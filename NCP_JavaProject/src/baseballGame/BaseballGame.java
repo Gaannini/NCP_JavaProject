@@ -37,7 +37,7 @@ public class BaseballGame extends JFrame {
 	private JPanel userPanel;
 
 	// 유저가 입력했던 오답 모음 (9개)
-	private JPanel panel1;
+	private Panel1 panel1;
 	private JPanel panel2;
 	private JPanel panel3;
 	private JPanel panel4;
@@ -96,9 +96,74 @@ public class BaseballGame extends JFrame {
 		private ImageIcon icon = new ImageIcon(getClass().getResource("/baseballGame/imgs/title.jpeg"));
 		private Image imgMain = icon.getImage();
 
+		@Override
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
 			g.drawImage(imgMain, 0, 0, getWidth(), getHeight(), null);
+		}
+	}
+
+	class Panel1 extends JPanel {
+		private int strike = 0;
+		private int ball = 0;
+
+		public void setData(int strike, int ball) {
+	        this.strike = strike;
+	        this.ball = ball;
+		}
+
+		@Override
+		public void paintComponent(Graphics g) { 
+			int panelWidth = getWidth(); // panel1의 너비
+		    int panelHeight = getHeight(); // panel1의 높이
+
+		    // 스트라이크
+		    if (strike == 3) {
+		        g.drawString("홈S2런!!", panelWidth / 3, panelHeight / 2);
+		    } else {
+		        if (strike == 0) {
+		            g.setColor(Color.RED);
+		            g.drawString("S", panelWidth / 8, panelHeight * 3 / 4);
+		            g.drawOval(panelWidth / 4, panelHeight / 2, panelWidth / 8, panelHeight / 8);
+		            g.drawOval(panelWidth * 3 / 8, panelHeight / 2, panelWidth / 8, panelHeight / 8);
+		        } else if (strike == 1) {
+		            g.setColor(Color.RED);
+		            g.drawString("S", panelWidth / 8, panelHeight * 3 / 4);
+		            g.fillOval(panelWidth / 4, panelHeight / 2, panelWidth / 8, panelHeight / 8);
+		            g.drawOval(panelWidth * 3 / 8, panelHeight / 2, panelWidth / 8, panelHeight / 8);
+		        } else if (strike == 2) {
+		            g.drawString("S", panelWidth / 8, panelHeight * 3 / 4);
+		            g.fillOval(panelWidth / 4, panelHeight / 2, panelWidth / 8, panelHeight / 8);
+		            g.fillOval(panelWidth * 3 / 8, panelHeight / 2, panelWidth / 8, panelHeight / 8);
+		        }
+		    }
+
+		    // 볼
+		    if (ball == 0) {
+		        g.setColor(Color.BLUE);
+		        g.drawString("B", panelWidth / 8, panelHeight * 9 / 10);
+		        g.drawOval(panelWidth / 4, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
+		        g.drawOval(panelWidth * 3 / 8, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
+		        g.drawOval(panelWidth / 2, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
+		    } else if (ball == 1) {
+		        g.setColor(Color.BLUE);
+		        g.drawString("B", panelWidth / 8, panelHeight * 9 / 10);
+		        g.fillOval(panelWidth / 4, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
+		        g.drawOval(panelWidth * 3 / 8, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
+		        g.drawOval(panelWidth / 2, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
+		    } else if (ball == 2) {
+		        g.setColor(Color.BLUE);
+		        g.drawString("B", panelWidth / 8, panelHeight * 9 / 10);
+		        g.fillOval(panelWidth / 4, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
+		        g.fillOval(panelWidth * 3 / 8, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
+		        g.drawOval(panelWidth / 2, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
+		    } else if (ball == 3) {
+		        g.setColor(Color.BLUE);
+		        g.drawString("B", panelWidth / 8, panelHeight * 9 / 10);
+		        g.fillOval(panelWidth / 4, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
+		        g.fillOval(panelWidth * 3 / 8, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
+		        g.fillOval(panelWidth / 2, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
+		    }
 		}
 	}
 
@@ -110,7 +175,7 @@ public class BaseballGame extends JFrame {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		System.out.println("################숫자야구게임################");
 		System.out.println("##############[CLIENT] 콘솔창##############");
 
@@ -126,24 +191,25 @@ public class BaseballGame extends JFrame {
 
 	// 네트워크 통신을 처리하는 스레드
 	class ClientThread extends Thread {
-		// [CLIENT -> SERVER] : 사용자가 입력한 숫자 배열 
-        public void sendUserArr(int[] userArr) {
-            try {
-                // 사용자가 입력한 숫자 배열을 문자열로 변환
-                StringBuilder userInputBuilder = new StringBuilder();
-                for (int i = 0; i < userArr.length; i++) {
-                    userInputBuilder.append(userArr[i]);
-                    if (i != userArr.length - 1) {
-                        userInputBuilder.append(",");
-                    }
-                }
-                String userInput = userInputBuilder.toString();
-                writer.println("user&" + userInput);
-                writer.flush();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+		// [CLIENT -> SERVER] : 사용자가 입력한 숫자 배열
+		public void sendUserArr(int[] userArr) {
+			try {
+				// 사용자가 입력한 숫자 배열을 문자열로 변환
+				StringBuilder userInputBuilder = new StringBuilder();
+				for (int i = 0; i < userArr.length; i++) {
+					userInputBuilder.append(userArr[i]);
+					if (i != userArr.length - 1) {
+						userInputBuilder.append(",");
+					}
+				}
+				String userInput = userInputBuilder.toString();
+				writer.println("user&" + userInput);
+				writer.flush();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 		@Override
 		public void run() {
 			try {
@@ -163,21 +229,21 @@ public class BaseballGame extends JFrame {
 			} catch (IOException e) {
 				e.printStackTrace();
 			} finally {
-                // 스레드 종료 시 자원 해제
-                try {
-                    if (writer != null) {
-                        writer.close();
-                    }
-                    if (reader != null) {
-                        reader.close();
-                    }
-                    if (socket != null) {
-                        socket.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+				// 스레드 종료 시 자원 해제
+				try {
+					if (writer != null) {
+						writer.close();
+					}
+					if (reader != null) {
+						reader.close();
+					}
+					if (socket != null) {
+						socket.close();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 
 		// 프로토콜 처리: 받은 메시지를 프로토콜에 따라 처리한다.
@@ -188,7 +254,14 @@ public class BaseballGame extends JFrame {
 
 				switch (protocol) {
 				case "result":
-					System.out.println("[SEVER -> CLIENT] 게임 결과 [스트라이크, 볼] : " + data);
+					System.out.println("[SEVER -> CLIENT] 게임 결과 | 스트라이크,볼 : " + data);
+					// 서버로부터 받은 결과를 스트라이크와 볼의 개수로 파싱하여 panel1에 전달
+	                String[] result = data.split(",");
+	                int strike = Integer.parseInt(result[0]);
+	                int ball = Integer.parseInt(result[1]);
+	                panel1.setData(strike, ball);
+	                // 화면 갱신을 위해 다시 그리기
+	                panel1.repaint();
 					break;
 				}
 			}
@@ -212,7 +285,7 @@ public class BaseballGame extends JFrame {
 		userPanel.setBackground(new Color(255, 255, 255));
 		userPanel.setLocation(26, 205);
 		userPanel.setSize(561, 472);
-		panel1 = new JPanel();
+		panel1 = new Panel1(); // Panel1 객체 생성
 		panel1.setBackground(new Color(240, 255, 240));
 		panel1.setBounds(0, 0, 170, 148);
 		panel2 = new JPanel();
@@ -298,6 +371,8 @@ public class BaseballGame extends JFrame {
 
 		userPanel.setVisible(true);
 		userPanel.setBounds(26, 200, 570, 472);
+		
+		userPanel.add(panel1);
 
 		panel1.setVisible(true);
 		panel2.setVisible(true);
@@ -385,9 +460,7 @@ public class BaseballGame extends JFrame {
 
 	private void listener() {
 		// TODO : 버튼 고쳐야 함 (두번 눌러야 서버에 전송됨, 클릭시 초기화도 해야 함)
-
 		inputButton.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new ClientThread().sendUserArr(userArr);

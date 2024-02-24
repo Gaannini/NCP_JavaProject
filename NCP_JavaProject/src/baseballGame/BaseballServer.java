@@ -61,7 +61,22 @@ public class BaseballServer implements Game {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
+			} finally {
+                // 스레드 종료 시 자원 해제
+                try {
+                    if (writer != null) {
+                        writer.close();
+                    }
+                    if (reader != null) {
+                        reader.close();
+                    }
+                    if (socket != null) {
+                        socket.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 		}
 
 		// 프로토콜 처리: 받은 메시지를 프로토콜에 따라 처리
@@ -115,7 +130,7 @@ public class BaseballServer implements Game {
 
 	// 스트라이크, 볼을 판단하는 역할
 	public static String decisionBall(int[] comArr, int[] userArr) {
-		int[] resultArr = new int[2];
+		String result = "";
 		int strike = 0, ball = 0;
 		for (int i = 0; i < comArr.length; i++) {
 			for (int j = 0; j < userArr.length; j++) {
@@ -130,8 +145,7 @@ public class BaseballServer implements Game {
 			}
 		}
 		System.out.println("[SERVER -> SERVER] : 스트라이크는 " + strike + ", 볼은 " + ball);
-		resultArr[0] = strike;
-		resultArr[1] = ball;
-		return Arrays.toString(resultArr);
+		result = strike + "," + ball;
+		return result;
 	}
 }
