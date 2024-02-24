@@ -5,17 +5,17 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.*;
+import java.util.Arrays;
 
 public class BaseballGame extends JFrame {
 	// 통신
 	private Socket socket;
-	private PrintWriter printWriter;
-	private BufferedReader bufferedReader;
+	private PrintWriter writer;
+	private BufferedReader reader;
 
 	// 폰트 파일 경로
 	String fontFilePath = "Font/BagelFatOne-Regular.ttf";
 	Font customFont;
-
 	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 
 	// 숫자 야구 게임 전체 화면
@@ -29,7 +29,7 @@ public class BaseballGame extends JFrame {
 
 	// 유저 입력 배열
 	int[] userArr = new int[3];
-	
+
 	// 유저 입력 배열 보이게 하는 라벨
 	private JLabel userArrLabel;
 
@@ -46,6 +46,9 @@ public class BaseballGame extends JFrame {
 	private JPanel panel7;
 	private JPanel panel8;
 	private JPanel panel9;
+
+	// 입력 확인 버튼
+	private JButton inputButton;
 
 	// 키보드 패널
 	private JPanel keyboardPanel;
@@ -172,6 +175,8 @@ public class BaseballGame extends JFrame {
 		icon9 = new ImageIcon(getClass().getResource("/baseballGame/imgs/icon9.jpeg"));
 
 		// 버튼
+		inputButton = new JButton("확인");
+
 		backButton = new JButton(iconBack);
 		button1 = new JButton(icon1);
 		button2 = new JButton(icon2);
@@ -183,7 +188,6 @@ public class BaseballGame extends JFrame {
 		button8 = new JButton(icon8);
 		button9 = new JButton(icon9);
 
-		// TODO
 		// 라벨
 		userArrLabel = new JLabel();
 		userArrLabel.setFont(new Font("Lucida Grande", Font.BOLD, 14));
@@ -218,6 +222,8 @@ public class BaseballGame extends JFrame {
 		panel7.setVisible(true);
 		panel8.setVisible(true);
 		panel9.setVisible(true);
+
+		inputButton.setBounds(479, 674, 117, 29);
 
 		keyboardPanel.setVisible(true);
 		keyboardPanel.setBounds(15, 700, 590, 230);
@@ -270,6 +276,8 @@ public class BaseballGame extends JFrame {
 		userPanel.add(panel8);
 		userPanel.add(panel9);
 
+		mainPanel.add(inputButton);
+
 		keyboardPanel.add(button1);
 		keyboardPanel.add(button2);
 		keyboardPanel.add(button3);
@@ -284,10 +292,33 @@ public class BaseballGame extends JFrame {
 
 	private void listener() {
 		try {
-			printWriter = new PrintWriter(socket.getOutputStream(), true);
+			writer = new PrintWriter(socket.getOutputStream(), true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		// TODO : 버튼 고쳐야 함 (두번 눌러야 서버에 전송됨, 클릭시 초기화도 해야 함)
+		inputButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				/*
+				 * 클라이언트(BaseballGame) -> 서버(BaseballServer) 숫자 배열을 전송할 때 PrintWriter를 사용
+				 */
+				// 사용자가 입력한 숫자 배열을 문자열로 변환
+				StringBuilder userInputBuilder = new StringBuilder();
+				for (int i = 0; i < userArr.length; i++) {
+					userInputBuilder.append(userArr[i]);
+					if (i != userArr.length - 1) {
+						userInputBuilder.append(",");
+					}
+				}
+				String userInput = userInputBuilder.toString();
+
+				// 서버에게 전송
+				writer.println("user&" + userInput);
+				// 버퍼 비우기
+				writer.flush();
+			}
+		});
 
 		button1.addActionListener(new ActionListener() {
 			@Override
@@ -386,8 +417,8 @@ public class BaseballGame extends JFrame {
 		userArrLabel.setText(userInputBuilder.toString());
 	}
 
+	// userArr를 문자열로 변환하여 userArrLabel에 설정
 	private void updateUserArrLabel() {
-		// userArr를 문자열로 변환하여 userArrLabel에 설정
 		StringBuilder userInputBuilder = new StringBuilder();
 		for (int i = 0; i < userArr.length; i++) {
 			if (userArr[i] != 0) {
