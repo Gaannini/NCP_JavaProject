@@ -14,6 +14,10 @@ public class BaseballServer implements Game {
 
 	private int[] comArr;
 
+	private int strike;
+	private int ball;
+	private boolean out;
+
 	@Override
 	public void start(Socket socket) {
 		System.out.println("################숫자야구게임################");
@@ -32,7 +36,7 @@ public class BaseballServer implements Game {
 		private Socket socket; // 클라이언트 소켓을 받아서 사용하는 변수
 		public PrintWriter writer; // 쓰기 버퍼.
 		private BufferedReader reader; // 읽기 버퍼.
-		
+
 		public int[] userArr_; // 유저 입력한 배열
 
 		public ServerThread(Socket socket) {
@@ -62,21 +66,21 @@ public class BaseballServer implements Game {
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
-                // 스레드 종료 시 자원 해제
-                try {
-                    if (writer != null) {
-                        writer.close();
-                    }
-                    if (reader != null) {
-                        reader.close();
-                    }
-                    if (socket != null) {
-                        socket.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+				// 스레드 종료 시 자원 해제
+				try {
+					if (writer != null) {
+						writer.close();
+					}
+					if (reader != null) {
+						reader.close();
+					}
+					if (socket != null) {
+						socket.close();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 
 		// 프로토콜 처리: 받은 메시지를 프로토콜에 따라 처리
@@ -131,7 +135,8 @@ public class BaseballServer implements Game {
 	// 스트라이크, 볼을 판단하는 역할
 	public static String decisionBall(int[] comArr, int[] userArr) {
 		String result = "";
-		int strike = 0, ball = 0;
+		int strike = 0;
+		int ball = 0;
 		for (int i = 0; i < comArr.length; i++) {
 			for (int j = 0; j < userArr.length; j++) {
 				// 숫자 일치
@@ -144,8 +149,27 @@ public class BaseballServer implements Game {
 				}
 			}
 		}
+
 		System.out.println("[SERVER -> SERVER] : 스트라이크는 " + strike + ", 볼은 " + ball);
 		result = strike + "," + ball;
 		return result;
+	}
+
+	public int getStrike()
+	{
+		return strike; 
+	}
+
+	public int getBall()
+	{
+		return ball; 
+	}
+
+	public boolean getOut() 
+	{
+		if (strike == 0 && ball == 0)
+			return true; 
+		else
+			return false; 
 	}
 }

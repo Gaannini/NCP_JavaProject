@@ -36,20 +36,11 @@ public class BaseballGame extends JFrame {
 	// 유저가 입력했던 숫자 모음 영역
 	private JPanel userPanel;
 
-	// 유저가 입력했던 오답 모음 (9개)
-	private Panel1 panel1;
-	private JPanel panel2;
-	private JPanel panel3;
-	private JPanel panel4;
-	private JPanel panel5;
-	private JPanel panel6;
-	private JPanel panel7;
-	private JPanel panel8;
-	private JPanel panel9;
+	// 유저가 입력한 숫자 채점
+	private MarkingPanel markingPanel;
 
-	// 스트라이크, 볼 라벨
-//	private JLabel strikeLabel;
-//	private JLabel ballLabel;
+	// 유저가 입력했던 오답 숫자
+	private JPanel wrongPanel;
 
 	// 입력 확인 버튼
 	private JButton inputButton;
@@ -103,67 +94,97 @@ public class BaseballGame extends JFrame {
 		}
 	}
 
-	class Panel1 extends JPanel {
+	class MarkingPanel extends JPanel {
 		private int strike = 0;
 		private int ball = 0;
+		private boolean out = false;
 
-		public void setData(int strike, int ball) {
-	        this.strike = strike;
-	        this.ball = ball;
+		public void setData(int strike, int ball, boolean out) {
+			this.strike = strike;
+			this.ball = ball;
+			this.out = out;
+			repaint();
 		}
 
 		@Override
-		public void paintComponent(Graphics g) { 
-			int panelWidth = getWidth(); // panel1의 너비
-		    int panelHeight = getHeight(); // panel1의 높이
+		protected void paintComponent(Graphics g) {
+			super.paintComponent(g);
 
-		    // 스트라이크
-		    if (strike == 3) {
-		        g.drawString("홈S2런!!", panelWidth / 3, panelHeight / 2);
-		    } else {
-		        if (strike == 0) {
-		            g.setColor(Color.RED);
-		            g.drawString("S", panelWidth / 8, panelHeight * 3 / 4);
-		            g.drawOval(panelWidth / 4, panelHeight / 2, panelWidth / 8, panelHeight / 8);
-		            g.drawOval(panelWidth * 3 / 8, panelHeight / 2, panelWidth / 8, panelHeight / 8);
-		        } else if (strike == 1) {
-		            g.setColor(Color.RED);
-		            g.drawString("S", panelWidth / 8, panelHeight * 3 / 4);
-		            g.fillOval(panelWidth / 4, panelHeight / 2, panelWidth / 8, panelHeight / 8);
-		            g.drawOval(panelWidth * 3 / 8, panelHeight / 2, panelWidth / 8, panelHeight / 8);
-		        } else if (strike == 2) {
-		            g.drawString("S", panelWidth / 8, panelHeight * 3 / 4);
-		            g.fillOval(panelWidth / 4, panelHeight / 2, panelWidth / 8, panelHeight / 8);
-		            g.fillOval(panelWidth * 3 / 8, panelHeight / 2, panelWidth / 8, panelHeight / 8);
-		        }
-		    }
+			g.setFont(customFont.deriveFont(Font.PLAIN, 50)); // 폰트설정
 
-		    // 볼
-		    if (ball == 0) {
-		        g.setColor(Color.BLUE);
-		        g.drawString("B", panelWidth / 8, panelHeight * 9 / 10);
-		        g.drawOval(panelWidth / 4, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
-		        g.drawOval(panelWidth * 3 / 8, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
-		        g.drawOval(panelWidth / 2, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
-		    } else if (ball == 1) {
-		        g.setColor(Color.BLUE);
-		        g.drawString("B", panelWidth / 8, panelHeight * 9 / 10);
-		        g.fillOval(panelWidth / 4, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
-		        g.drawOval(panelWidth * 3 / 8, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
-		        g.drawOval(panelWidth / 2, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
-		    } else if (ball == 2) {
-		        g.setColor(Color.BLUE);
-		        g.drawString("B", panelWidth / 8, panelHeight * 9 / 10);
-		        g.fillOval(panelWidth / 4, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
-		        g.fillOval(panelWidth * 3 / 8, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
-		        g.drawOval(panelWidth / 2, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
-		    } else if (ball == 3) {
-		        g.setColor(Color.BLUE);
-		        g.drawString("B", panelWidth / 8, panelHeight * 9 / 10);
-		        g.fillOval(panelWidth / 4, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
-		        g.fillOval(panelWidth * 3 / 8, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
-		        g.fillOval(panelWidth / 2, panelHeight * 5 / 8, panelWidth / 8, panelHeight / 8);
-		    }
+			if (strike == 3) {
+				setFont(customFont.deriveFont(Font.PLAIN, 60)); // 폰트설정
+				g.drawString("홈S2런", 70, 236);
+			} 
+			else {
+				if (strike == 0) {
+					g.setColor(Color.RED);
+					g.drawString("STRIKE", 50, 120);
+					g.drawOval(50, 120, 50, 50);
+					g.drawOval(120, 120, 50, 50);
+					g.drawOval(190, 120, 50, 50);
+				} 
+				else if (strike == 1)
+				{
+					g.setColor(Color.RED);
+					g.drawString("STRIKE", 50, 120);
+					g.fillOval(50, 120, 50, 50);
+					g.drawOval(120, 120, 50, 50);
+					g.drawOval(190, 120, 50, 50);
+				} 
+				else if (strike == 2)
+				{
+					g.setColor(Color.RED);
+					g.drawString("STRIKE", 50, 120);
+					g.fillOval(50, 120, 50, 50);
+					g.fillOval(120, 120, 50, 50);
+					g.drawOval(190, 120, 50, 50);
+				}
+				if (ball == 0)
+				{
+					g.setColor(Color.BLUE);
+					g.drawString("BALL", 50, 230);
+					g.drawOval(50, 230, 50, 50);
+					g.drawOval(120, 230, 50, 50);
+					g.drawOval(190, 230, 50, 50);
+				} 
+				else if (ball == 1) 
+				{
+					g.setColor(Color.BLUE);
+					g.drawString("BALL", 50, 230);
+					g.fillOval(50, 230, 50, 50);
+					g.drawOval(120, 230, 50, 50);
+					g.drawOval(190, 230, 50, 50);
+				} 
+				else if (ball == 2) 
+				{
+					g.setColor(Color.BLUE);
+					g.drawString("BALL", 50, 230);
+					g.fillOval(50, 230, 50, 50);
+					g.fillOval(120, 230, 50, 50);
+					g.drawOval(190, 230, 50, 50);
+				} 
+				else if (ball == 3)
+				{
+					g.setColor(Color.BLUE);
+					g.drawString("BALL", 50, 230);
+					g.fillOval(50, 230, 50, 50);
+					g.fillOval(120, 230, 50, 50);
+					g.fillOval(190, 230, 50, 50);
+				}
+				if (!out)
+				{
+					g.setColor(Color.ORANGE);
+					g.drawString("OUT", 50, 340);
+					g.drawOval(50, 340, 50, 50);
+				} 
+				else
+				{
+					g.setColor(Color.ORANGE);
+					g.drawString("OUT", 50, 340);
+					g.fillOval(50, 340, 50, 50);
+				}
+			}
 		}
 	}
 
@@ -256,12 +277,13 @@ public class BaseballGame extends JFrame {
 				case "result":
 					System.out.println("[SEVER -> CLIENT] 게임 결과 | 스트라이크,볼 : " + data);
 					// 서버로부터 받은 결과를 스트라이크와 볼의 개수로 파싱하여 panel1에 전달
-	                String[] result = data.split(",");
-	                int strike = Integer.parseInt(result[0]);
-	                int ball = Integer.parseInt(result[1]);
-	                panel1.setData(strike, ball);
-	                // 화면 갱신을 위해 다시 그리기
-	                panel1.repaint();
+					String[] result = data.split(",");
+					int strike = Integer.parseInt(result[0]);
+					int ball = Integer.parseInt(result[1]);
+					boolean out = false;
+					markingPanel.setData(strike, ball, out);
+					// 화면 갱신을 위해 다시 그리기
+					markingPanel.repaint();
 					break;
 				}
 			}
@@ -285,33 +307,11 @@ public class BaseballGame extends JFrame {
 		userPanel.setBackground(new Color(255, 255, 255));
 		userPanel.setLocation(26, 205);
 		userPanel.setSize(561, 472);
-		panel1 = new Panel1(); // Panel1 객체 생성
-		panel1.setBackground(new Color(240, 255, 240));
-		panel1.setBounds(0, 0, 170, 148);
-		panel2 = new JPanel();
-		panel2.setBackground(new Color(240, 255, 240));
-		panel2.setBounds(200, 0, 170, 148);
-		panel3 = new JPanel();
-		panel3.setBackground(new Color(240, 255, 240));
-		panel3.setBounds(400, 0, 170, 148);
-		panel4 = new JPanel();
-		panel4.setBackground(new Color(240, 255, 240));
-		panel4.setBounds(0, 162, 170, 148);
-		panel5 = new JPanel();
-		panel5.setBackground(new Color(240, 255, 240));
-		panel5.setBounds(200, 162, 170, 148);
-		panel6 = new JPanel();
-		panel6.setBackground(new Color(240, 255, 240));
-		panel6.setBounds(400, 162, 170, 148);
-		panel7 = new JPanel();
-		panel7.setBackground(new Color(240, 255, 240));
-		panel7.setBounds(0, 325, 170, 148);
-		panel8 = new JPanel();
-		panel8.setBackground(new Color(240, 255, 240));
-		panel8.setBounds(200, 325, 170, 148);
-		panel9 = new JPanel();
-		panel9.setBackground(new Color(240, 255, 240));
-		panel9.setBounds(400, 325, 170, 148);
+		markingPanel = new MarkingPanel(); // Panel1 객체 생성
+		markingPanel.setBackground(new Color(255, 255, 255));
+		wrongPanel = new JPanel();
+		wrongPanel.setBorder(null);
+		wrongPanel.setBackground(new Color(240, 255, 240));
 
 		keyboardPanel = new JPanel();
 		keyboardPanel.setBackground(new Color(255, 255, 255));
@@ -345,11 +345,6 @@ public class BaseballGame extends JFrame {
 		// 라벨
 		userArrLabel = new JLabel();
 		userArrLabel.setFont(new Font("Lucida Grande", Font.BOLD, 14));
-//		strikeLabel = new JLabel("Strike : ");
-//		strikeLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
-//		ballLabel = new JLabel("Ball: ");
-//		ballLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
-
 	}
 
 	private void setting() {
@@ -371,21 +366,11 @@ public class BaseballGame extends JFrame {
 
 		userPanel.setVisible(true);
 		userPanel.setBounds(26, 200, 570, 472);
-		
-		userPanel.add(panel1);
 
-		panel1.setVisible(true);
-		panel2.setVisible(true);
-		panel3.setVisible(true);
-		panel4.setVisible(true);
-		panel5.setVisible(true);
-		panel6.setVisible(true);
-		panel7.setVisible(true);
-		panel8.setVisible(true);
-		panel9.setVisible(true);
-
-//		strikeLabel.setBounds(10, 10, 70, 20);
-//		ballLabel.setBounds(10, 40, 70, 20);
+		markingPanel.setVisible(true);
+		markingPanel.setBounds(0, 0, 285, 472);
+		wrongPanel.setVisible(true);
+		wrongPanel.setBounds(285, 0, 285, 472);
 
 		inputButton.setBounds(479, 674, 117, 29);
 
@@ -430,19 +415,8 @@ public class BaseballGame extends JFrame {
 
 		userPanel.setLayout(null); // 지우지마!!
 
-		userPanel.add(panel1);
-		userPanel.add(panel2);
-		userPanel.add(panel3);
-		userPanel.add(panel4);
-		userPanel.add(panel5);
-		userPanel.add(panel6);
-		userPanel.add(panel7);
-		userPanel.add(panel8);
-		userPanel.add(panel9);
-
-//		panel1.setLayout(new GridLayout(2, 1)); // 스트라이크, 볼을 위아래로 배치
-//	    panel1.add(strikeLabel);
-//	    panel1.add(ballLabel);
+		userPanel.add(markingPanel);
+		userPanel.add(wrongPanel);
 
 		mainPanel.add(inputButton);
 
