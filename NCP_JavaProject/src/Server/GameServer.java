@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import baseballGame.BaseballServer;
-import bingoGame.BingoGame;
 import exgame.exgameserver;
 import memoryGame.MemoryServer;
 import omokGame.OmokServer;
@@ -62,6 +61,7 @@ public class GameServer {
 		private BufferedReader reader; // 읽기 버퍼.
 		public String clientId; // 클라이언트 아이디를 담는 변수.
 		public String gamename; // 클라이언트가 선택한 게임 이름
+		public String exit;
 
 		public clientInfo(Socket socket) {
 			this.socket = socket;
@@ -97,18 +97,38 @@ public class GameServer {
 				case "ID":
 					clientId = data;
 					clientIds.put(socket, clientId);
-					System.out.println(clientId + "들어옴");
-
-					// notifyClients(clientId + " is enter the room.", "ID");
-					// sendClientList();
+					String clientinmsg = clientId + "님이 입장하셨습니다.";
+					System.out.println(clientinmsg);
+					broadcast(clientinmsg);
 					break;
 				case "gamename":
-					System.out.println(clientId + "님이 " + data + "게임을 선택하셨습니다.");
+					System.out.println("[" + clientId + "] 님이 " + data + "게임을 선택하셨습니다.");
 					startGame(data, socket); // 클라이언트의 소켓 정보 전달
 					break;
-
-				// Handle other protocols
+				case "CHAT":
+					String chat = "[" + clientId + "] " + data;
+					System.out.println(chat);
+					broadcast(chat);
+					break;
+				case "EXIT":
+					exit = data;
+					String exitmsg = clientId + "님이 " + exit + "하셨습니다.";
+					System.out.println(exitmsg);
+					broadcast(exitmsg);
+					break;
 				}
+			}
+		}
+	}
+
+	public void broadcast(String message) {
+		for (Map.Entry<Socket, String> entry : clientIds.entrySet()) {
+			try {
+				PrintWriter writer = new PrintWriter(entry.getKey().getOutputStream(), true);
+				writer.println(message);
+			} catch (IOException e) {
+				System.out.println("Error broadcasting message to client: " + entry.getValue());
+				e.printStackTrace();
 			}
 		}
 	}
@@ -122,7 +142,7 @@ public class GameServer {
 			clients.add(clientSocket);
 		} else {
 			System.out.println("게임이름을 잘못입력하셨습니다.");
-			
+
 		}
 	}
 
