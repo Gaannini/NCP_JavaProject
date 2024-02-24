@@ -9,34 +9,39 @@ import Server.Game;
 public class BaseballServer implements Game {
 	// 통신
 	private Socket socket;
+	private PrintWriter writer;
+	private BufferedReader reader;
 
-	// 난수 배열
 	private int[] comArr;
 
 	@Override
 	public void start(Socket socket) {
+		System.out.println("################숫자야구게임################");
+		System.out.println("##############[SERVER] 콘솔창##############");
+
 		this.socket = socket;
-		new clientInfo(socket).start(); // 클라이언트 연결을 처리하는 쓰레드 시작
+		new ServerThread(socket).start(); // 클라이언트 연결을 처리하는 쓰레드 시작
 
 		// 난수 생성 메소드 호출
 		comArr = getRandomNum();
-		System.out.println("[SERVER] 난수 생성 : " + Arrays.toString(comArr));
+		System.out.println("[SERVER -> SERVER] 난수 생성 : " + Arrays.toString(comArr));
 	}
 
-	public class clientInfo extends Thread {
+	// 네트워크 통신을 처리하는 스레드
+	public class ServerThread extends Thread {
 		private Socket socket; // 클라이언트 소켓을 받아서 사용하는 변수
 		public PrintWriter writer; // 쓰기 버퍼.
 		private BufferedReader reader; // 읽기 버퍼.
-		public int[] userArr_; // 유저 입력한 배열 
+		
+		public int[] userArr_; // 유저 입력한 배열
 
-		public clientInfo(Socket socket) {
+		public ServerThread(Socket socket) {
 			this.socket = socket;
 		}
 
 		@Override
 		public void run() {
 			try {
-				// 클라이언트로부터 입력을 읽고 클라이언트에게 추력을 보내기 위해 초기화
 				reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				writer = new PrintWriter(socket.getOutputStream(), true);
 
@@ -48,13 +53,18 @@ public class BaseballServer implements Game {
 					String[] parsedMsg = clientMsg.split("&");
 					// Client Thread에서 동작하는 프로토콜
 					handleProtocol(parsedMsg);
+
+					// [SERVER -> CLIENT] : 스트라이크와 볼 정보 [strike 수, ball 수]
+					String result = decisionBall(comArr, userArr_);
+					writer.println("result&" + result);
+					writer.flush();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 
-		// 프로토콜 처리: 받은 메시지를 프로토콜에 따라 처리한다.
+		// 프로토콜 처리: 받은 메시지를 프로토콜에 따라 처리
 		private void handleProtocol(String[] parsedMsg) {
 			if (parsedMsg.length >= 2) {
 				String protocol = parsedMsg[0];
@@ -62,15 +72,13 @@ public class BaseballServer implements Game {
 
 				switch (protocol) {
 				case "user":
-					// 문자열을 공백을 기준으로 분리하여 int[] 배열로 변환
-	                String[] dataArray = data.split(",");
-	                userArr_ = new int[dataArray.length];
-	                for (int i = 0; i < dataArray.length; i++) {
-	                    userArr_[i] = Integer.parseInt(dataArray[i]);
-	                }
-	                System.out.println("[CLIENT] 유저가 입력한 숫자들 : " + Arrays.toString(userArr_));
-	                decisionBall(comArr, userArr_);
-	                break;
+					String[] dataArray = data.split(",");
+					userArr_ = new int[dataArray.length];
+					for (int i = 0; i < dataArray.length; i++) {
+						userArr_[i] = Integer.parseInt(dataArray[i]);
+					}
+					System.out.println("[CLIENT -> SERVER] 유저가 입력한 숫자들 : " + Arrays.toString(userArr_));
+					break;
 				}
 			}
 		}
@@ -106,10 +114,8 @@ public class BaseballServer implements Game {
 	}
 
 	// 스트라이크, 볼을 판단하는 역할
-	public static boolean decisionBall(int[] comArr, int[] userArr) {
-		boolean isGameRun = true;
-		String result = "";
-
+	public static String decisionBall(int[] comArr, int[] userArr) {
+		int[] resultArr = new int[2];
 		int strike = 0, ball = 0;
 		for (int i = 0; i < comArr.length; i++) {
 			for (int j = 0; j < userArr.length; j++) {
@@ -123,14 +129,9 @@ public class BaseballServer implements Game {
 				}
 			}
 		}
-
-		if (strike == 3)
-			isGameRun = false;
-
-		result = "strike =" + strike + ", ball = " + ball;
-		System.out.println(result);
-
-		return isGameRun;
+		System.out.println("[SERVER -> SERVER] : 스트라이크는 " + strike + ", 볼은 " + ball);
+		resultArr[0] = strike;
+		resultArr[1] = ball;
+		return Arrays.toString(resultArr);
 	}
-
 }

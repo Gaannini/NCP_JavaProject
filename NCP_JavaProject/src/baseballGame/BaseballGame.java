@@ -47,6 +47,10 @@ public class BaseballGame extends JFrame {
 	private JPanel panel8;
 	private JPanel panel9;
 
+	// 스트라이크, 볼 라벨
+//	private JLabel strikeLabel;
+//	private JLabel ballLabel;
+
 	// 입력 확인 버튼
 	private JButton inputButton;
 
@@ -106,13 +110,90 @@ public class BaseballGame extends JFrame {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		System.out.println("################숫자야구게임################");
+		System.out.println("##############[CLIENT] 콘솔창##############");
 
-		this.socket = socket;
 		init();
 		setting();
 		batch();
 		listener();
 		setVisible(true);
+
+		this.socket = socket;
+		new ClientThread().start();
+	}
+
+	// 네트워크 통신을 처리하는 스레드
+	class ClientThread extends Thread {
+		// [CLIENT -> SERVER] : 사용자가 입력한 숫자 배열 
+        public void sendUserArr(int[] userArr) {
+            try {
+                // 사용자가 입력한 숫자 배열을 문자열로 변환
+                StringBuilder userInputBuilder = new StringBuilder();
+                for (int i = 0; i < userArr.length; i++) {
+                    userInputBuilder.append(userArr[i]);
+                    if (i != userArr.length - 1) {
+                        userInputBuilder.append(",");
+                    }
+                }
+                String userInput = userInputBuilder.toString();
+                writer.println("user&" + userInput);
+                writer.flush();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+		@Override
+		public void run() {
+			try {
+				writer = new PrintWriter(socket.getOutputStream(), true);
+				reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+				/*
+				 * 메세지 처리 루프 클라이언트로부터 메시지를 읽고, 이를 '&'를 기준으로 나누어 handleProtocol() 메소드 호출
+				 */
+				String serverMsg;
+				while ((serverMsg = reader.readLine()) != null) {
+					String[] parsedMsg = serverMsg.split("&");
+					// Client Thread에서 동작하는 프로토콜
+					handleProtocol(parsedMsg);
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+                // 스레드 종료 시 자원 해제
+                try {
+                    if (writer != null) {
+                        writer.close();
+                    }
+                    if (reader != null) {
+                        reader.close();
+                    }
+                    if (socket != null) {
+                        socket.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+		}
+
+		// 프로토콜 처리: 받은 메시지를 프로토콜에 따라 처리한다.
+		private void handleProtocol(String[] parsedMsg) {
+			if (parsedMsg.length >= 2) {
+				String protocol = parsedMsg[0];
+				String data = parsedMsg[1];
+
+				switch (protocol) {
+				case "result":
+					System.out.println("[SEVER -> CLIENT] 게임 결과 [스트라이크, 볼] : " + data);
+					break;
+				}
+			}
+		}
+
 	}
 
 	private void init() {
@@ -191,6 +272,11 @@ public class BaseballGame extends JFrame {
 		// 라벨
 		userArrLabel = new JLabel();
 		userArrLabel.setFont(new Font("Lucida Grande", Font.BOLD, 14));
+//		strikeLabel = new JLabel("Strike : ");
+//		strikeLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
+//		ballLabel = new JLabel("Ball: ");
+//		ballLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
+
 	}
 
 	private void setting() {
@@ -222,6 +308,9 @@ public class BaseballGame extends JFrame {
 		panel7.setVisible(true);
 		panel8.setVisible(true);
 		panel9.setVisible(true);
+
+//		strikeLabel.setBounds(10, 10, 70, 20);
+//		ballLabel.setBounds(10, 40, 70, 20);
 
 		inputButton.setBounds(479, 674, 117, 29);
 
@@ -276,6 +365,10 @@ public class BaseballGame extends JFrame {
 		userPanel.add(panel8);
 		userPanel.add(panel9);
 
+//		panel1.setLayout(new GridLayout(2, 1)); // 스트라이크, 볼을 위아래로 배치
+//	    panel1.add(strikeLabel);
+//	    panel1.add(ballLabel);
+
 		mainPanel.add(inputButton);
 
 		keyboardPanel.add(button1);
@@ -291,32 +384,13 @@ public class BaseballGame extends JFrame {
 	}
 
 	private void listener() {
-		try {
-			writer = new PrintWriter(socket.getOutputStream(), true);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		// TODO : 버튼 고쳐야 함 (두번 눌러야 서버에 전송됨, 클릭시 초기화도 해야 함)
+
 		inputButton.addActionListener(new ActionListener() {
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				/*
-				 * 클라이언트(BaseballGame) -> 서버(BaseballServer) 숫자 배열을 전송할 때 PrintWriter를 사용
-				 */
-				// 사용자가 입력한 숫자 배열을 문자열로 변환
-				StringBuilder userInputBuilder = new StringBuilder();
-				for (int i = 0; i < userArr.length; i++) {
-					userInputBuilder.append(userArr[i]);
-					if (i != userArr.length - 1) {
-						userInputBuilder.append(",");
-					}
-				}
-				String userInput = userInputBuilder.toString();
-
-				// 서버에게 전송
-				writer.println("user&" + userInput);
-				// 버퍼 비우기
-				writer.flush();
+				new ClientThread().sendUserArr(userArr);
 			}
 		});
 
@@ -427,4 +501,5 @@ public class BaseballGame extends JFrame {
 		}
 		userArrLabel.setText(userInputBuilder.toString());
 	}
+
 }
