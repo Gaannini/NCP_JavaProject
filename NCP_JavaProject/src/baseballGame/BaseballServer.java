@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 
 import Server.Game;
 
@@ -11,14 +12,17 @@ public class BaseballServer implements Game {
 	// 통신 
 	private Socket socket;
 	
-	// 난수를 저장할 배열 
-	private int[] randomNumbers;
+	// 난수 배열
+	private int[] comArr;
 
 	@Override
 	public void start(Socket socket) {
 		this.socket = socket;
 		new clientInfo(socket).start(); // 클라이언트 연결을 처리하는 쓰레드 시작
-		getRandomNum();
+		
+		// 난수 생성 메소드 호출
+	    comArr = getRandomNum();
+	    System.out.println("[SERVER] 난수 생성 : " + Arrays.toString(comArr));
 	}
 
 	public class clientInfo extends Thread {
@@ -74,11 +78,11 @@ public class BaseballServer implements Game {
 	public static int[] getRandomNum() {
 		int[] numArr = new int[3];
 		// 1번째 난수 생성 
-		numArr[0] = (int)(Math.random()*10); 
+		numArr[0] = (int)(Math.random()*9) + 1; 
 		// 2번째 난수 생성
 		boolean isRun = true;
 		while(isRun) {
-			int rNum = (int)(Math.random()*10);
+			int rNum = (int)(Math.random()*9) + 1; 
 			// 만약, 1번째 값과 같으면 다시 반복해서 생성하라!!
 			if(rNum == numArr[0])
 				continue;
@@ -88,7 +92,7 @@ public class BaseballServer implements Game {
 		// 3번째 난수 생성
 		isRun = true;
 		while(isRun) {
-			int rNum = (int)(Math.random()*10);
+			int rNum = (int)(Math.random()*9) + 1; 
 			// 1번째 값 또는 2번째 값이 같으면 다시 반복해서 생성하라!!
 			if(rNum == numArr[0] || rNum == numArr[1])
 				continue;
@@ -97,34 +101,6 @@ public class BaseballServer implements Game {
 			System.out.println("");
 		}
 		return numArr;
-	}
-	
-	// 스트라이크, 볼을 판단하는 역할
-	public static boolean decisionBall(int[] comArr, int[] userArr) {
-		boolean isGameRun = true;
-		String result = "";
-		
-		int strike = 0, ball = 0;
-		for(int i = 0; i< comArr.length; i++) {
-			for(int j = 0; j < userArr.length; j++) {
-				// 숫자 일치
-				if(comArr[i] == userArr[j]) {
-					// 자릿수까지 일치 
-					if(i == j) 
-						strike++;
-					else
-						ball++;
-				}
- 			}
-		}
-		
-		if(strike == 3) 
-			isGameRun = false;
-		
-		result = "strike =" + strike + ", ball = " + ball;
-		System.out.println(result);
-		
-		return isGameRun;
 	}
 
 }
