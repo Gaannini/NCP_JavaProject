@@ -1,6 +1,5 @@
 package baseballGame;
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -8,19 +7,16 @@ import java.io.*;
 import java.net.*;
 
 public class BaseballGame extends JFrame {
-	// TODO
-	// 유저 입력 배열 
-	int[] userArr = new int[3];
-	
 	// 통신
 	private Socket socket;
 	private PrintWriter printWriter;
 	private BufferedReader bufferedReader;
 
-	// 폰트 크기 설정
-	private Font smallFont; // 16px
-	private Font mediumFont; // 24px
-	private Font largeFont; // 36px
+	// 폰트 파일 경로
+	String fontFilePath = "Font/BagelFatOne-Regular.ttf";
+	Font customFont;
+
+	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 
 	// 숫자 야구 게임 전체 화면
 	private JPanel mainPanel;
@@ -30,12 +26,14 @@ public class BaseballGame extends JFrame {
 
 	// 유저가 입력한 숫자 패널
 	private JPanel numPanel;
+
+	// 유저 입력 배열
+	int[] userArr = new int[3];
 	
-	// TODO
-	// 유저 입력 배열 보이게 하는 라벨 
+	// 유저 입력 배열 보이게 하는 라벨
 	private JLabel userArrLabel;
 
-	// 유저가 입력했던 숫자 모음 영역 
+	// 유저가 입력했던 숫자 모음 영역
 	private JPanel userPanel;
 
 	// 유저가 입력했던 오답 모음 (9개)
@@ -52,8 +50,7 @@ public class BaseballGame extends JFrame {
 	// 키보드 패널
 	private JPanel keyboardPanel;
 
-	// 키보드 - 버튼(0 ~ 9)
-	private JButton button0;
+	// 키보드 - 버튼(1 ~ 9)
 	private JButton button1;
 	private JButton button2;
 	private JButton button3;
@@ -64,8 +61,10 @@ public class BaseballGame extends JFrame {
 	private JButton button8;
 	private JButton button9;
 
+	// 키보드 - 버튼(지우개)
+	private JButton backButton;
+
 	// 키보드 버튼 - 이미지 아이콘
-	private ImageIcon icon0;
 	private ImageIcon icon1;
 	private ImageIcon icon2;
 	private ImageIcon icon3;
@@ -75,6 +74,7 @@ public class BaseballGame extends JFrame {
 	private ImageIcon icon7;
 	private ImageIcon icon8;
 	private ImageIcon icon9;
+	private ImageIcon iconBack;
 
 	// 이미지 아이콘 크기 조절 메소드
 	private ImageIcon ImageSetSize(ImageIcon icon, int width, int heigth) {
@@ -83,7 +83,7 @@ public class BaseballGame extends JFrame {
 		ImageIcon xyImage = new ImageIcon(yImage);
 		return xyImage;
 	}
-	
+
 	// 이미지 삽입 패널 클래스
 	class NamePanel extends JPanel {
 		private ImageIcon icon = new ImageIcon(getClass().getResource("/baseballGame/imgs/title.jpeg"));
@@ -97,6 +97,13 @@ public class BaseballGame extends JFrame {
 
 	// BaseballGame 생성자
 	public BaseballGame(Socket socket) {
+		try {
+			customFont = Font.createFont(Font.TRUETYPE_FONT, new File(fontFilePath));
+			ge.registerFont(customFont);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		this.socket = socket;
 		init();
 		setting();
@@ -110,7 +117,7 @@ public class BaseballGame extends JFrame {
 		namePanel = new NamePanel();
 		namePanel.setBackground(new Color(192, 192, 192));
 		namePanel.setForeground(new Color(169, 169, 169));
-		
+
 		// 패널
 		mainPanel = new JPanel();
 		mainPanel.setBorder(null);
@@ -148,12 +155,12 @@ public class BaseballGame extends JFrame {
 		panel9 = new JPanel();
 		panel9.setBackground(new Color(240, 255, 240));
 		panel9.setBounds(400, 325, 170, 148);
-		
+
 		keyboardPanel = new JPanel();
 		keyboardPanel.setBackground(new Color(255, 255, 255));
 
 		// 이미지
-		icon0 = new ImageIcon(getClass().getResource("/baseballGame/imgs/icon0.jpeg"));
+		iconBack = new ImageIcon(getClass().getResource("/baseballGame/imgs/back.jpeg"));
 		icon1 = new ImageIcon(getClass().getResource("/baseballGame/imgs/icon1.jpeg"));
 		icon2 = new ImageIcon(getClass().getResource("/baseballGame/imgs/icon2.jpeg"));
 		icon3 = new ImageIcon(getClass().getResource("/baseballGame/imgs/icon3.jpeg"));
@@ -165,7 +172,7 @@ public class BaseballGame extends JFrame {
 		icon9 = new ImageIcon(getClass().getResource("/baseballGame/imgs/icon9.jpeg"));
 
 		// 버튼
-		button0 = new JButton(icon0);
+		backButton = new JButton(iconBack);
 		button1 = new JButton(icon1);
 		button2 = new JButton(icon2);
 		button3 = new JButton(icon3);
@@ -180,11 +187,6 @@ public class BaseballGame extends JFrame {
 		// 라벨
 		userArrLabel = new JLabel();
 		userArrLabel.setFont(new Font("Lucida Grande", Font.BOLD, 14));
-
-		// 폰트
-		smallFont = new Font("맑은고딕", Font.PLAIN, 16);
-		mediumFont = new Font("맑은고딕", Font.PLAIN, 24);
-		largeFont = new Font("맑은고딕", Font.PLAIN, 36);
 	}
 
 	private void setting() {
@@ -202,9 +204,11 @@ public class BaseballGame extends JFrame {
 		numPanel.setBounds(26, 112, 570, 70);
 		numPanel.setBackground(new Color(240, 255, 255));
 
+		userArrLabel.setFont(customFont.deriveFont(Font.PLAIN, 40)); // 폰트설정
+
 		userPanel.setVisible(true);
 		userPanel.setBounds(26, 200, 570, 472);
-		
+
 		panel1.setVisible(true);
 		panel2.setVisible(true);
 		panel3.setVisible(true);
@@ -229,9 +233,9 @@ public class BaseballGame extends JFrame {
 		button7.setBounds(0, 0, buttonWidth, buttonHeigth);
 		button8.setBounds(0, 0, buttonWidth, buttonHeigth);
 		button9.setBounds(0, 0, buttonWidth, buttonHeigth);
-		button0.setBounds(0, 0, buttonWidth, buttonHeigth);
+		backButton.setBounds(0, 0, buttonWidth, buttonHeigth);
 
-		icon0 = ImageSetSize(icon0, buttonWidth, buttonHeigth);
+		iconBack = ImageSetSize(iconBack, buttonWidth, buttonHeigth);
 		icon1 = ImageSetSize(icon1, buttonWidth, buttonHeigth);
 		icon2 = ImageSetSize(icon2, buttonWidth, buttonHeigth);
 		icon3 = ImageSetSize(icon3, buttonWidth, buttonHeigth);
@@ -248,14 +252,13 @@ public class BaseballGame extends JFrame {
 		mainPanel.setLayout(null);
 		mainPanel.add(numPanel);
 		mainPanel.add(namePanel);
-		
+
 		mainPanel.add(userPanel);
 		mainPanel.add(keyboardPanel);
-		
-		// TODO
+
 		numPanel.add(userArrLabel);
-		
-		userPanel.setLayout(null); // 지우지마!! 
+
+		userPanel.setLayout(null); // 지우지마!!
 
 		userPanel.add(panel1);
 		userPanel.add(panel2);
@@ -276,7 +279,7 @@ public class BaseballGame extends JFrame {
 		keyboardPanel.add(button7);
 		keyboardPanel.add(button8);
 		keyboardPanel.add(button9);
-		keyboardPanel.add(button0);
+		keyboardPanel.add(backButton);
 	}
 
 	private void listener() {
@@ -285,96 +288,112 @@ public class BaseballGame extends JFrame {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		button1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// ex)
-				printWriter.println("baseball&" + "클라이언트");
-				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가
 				addUserInput(1);
 			}
 		});
 		button2.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가
 				addUserInput(2);
 			}
 		});
 		button3.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가
 				addUserInput(3);
 			}
 		});
 		button4.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가
 				addUserInput(4);
 			}
 		});
 		button5.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가
 				addUserInput(5);
 			}
 		});
 		button6.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가
 				addUserInput(6);
 			}
 		});
 		button7.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가
 				addUserInput(7);
 			}
 		});
 		button8.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가
 				addUserInput(8);
 			}
 		});
 		button9.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가
 				addUserInput(9);
 			}
 		});
-		button0.addActionListener(new ActionListener() {
+		backButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
-				addUserInput(0);
+				// userArr[]에서 마지막 입력된 숫자 지우기
+				for (int i = userArr.length - 1; i >= 0; i--) {
+					if (userArr[i] != 0) {
+						userArr[i] = 0;
+						break;
+					}
+				}
+				// userArrLabel 업데이트
+				updateUserArrLabel();
 			}
 		});
 	}
-	
-	// 사용자 입력을 userArr에 추가하고 userArrLabel에 표시하는 메소드 
+
+	// 사용자 입력을 userArr에 추가하고 userArrLabel에 표시하는 메소드
 	private void addUserInput(int number) {
-		for(int i = 0; i < userArr.length; i++) {
-			if(userArr[i] == 0) {
+		for (int i = 0; i < userArr.length; i++) {
+			if (userArr[i] == 0) {
 				userArr[i] = number;
 				break;
 			}
 		}
 		// userArr를 문자열로 변환하여 userArrLabel에 설정
-	    StringBuilder userInputBuilder = new StringBuilder();
-	    for (int i = 0; i < userArr.length; i++) {
-	        if (userArr[i] != 0) {
-	            userInputBuilder.append(userArr[i]);
-	        }
-	    }
-	    userArrLabel.setText(userInputBuilder.toString());
+		StringBuilder userInputBuilder = new StringBuilder();
+		for (int i = 0; i < userArr.length; i++) {
+			if (userArr[i] != 0) {
+				userInputBuilder.append(userArr[i]);
+			}
+		}
+		userArrLabel.setText(userInputBuilder.toString());
+	}
+
+	private void updateUserArrLabel() {
+		// userArr를 문자열로 변환하여 userArrLabel에 설정
+		StringBuilder userInputBuilder = new StringBuilder();
+		for (int i = 0; i < userArr.length; i++) {
+			if (userArr[i] != 0) {
+				userInputBuilder.append(userArr[i]);
+			}
+		}
+		userArrLabel.setText(userInputBuilder.toString());
 	}
 }
