@@ -73,10 +73,8 @@ public class BaseballServer implements Game {
 	// 난수 생성 메소드 
 	public static int[] getRandomNum() {
 		int[] numArr = new int[3];
-		
 		// 1번째 난수 생성 
 		numArr[0] = (int)(Math.random()*10); 
-		
 		// 2번째 난수 생성
 		boolean isRun = true;
 		while(isRun) {
@@ -87,7 +85,6 @@ public class BaseballServer implements Game {
 			numArr[1] = rNum;
 			isRun = false;
 		}
-		
 		// 3번째 난수 생성
 		isRun = true;
 		while(isRun) {
@@ -99,8 +96,35 @@ public class BaseballServer implements Game {
 			isRun = false;
 			System.out.println("");
 		}
-		
 		return numArr;
+	}
+	
+	// 스트라이크, 볼을 판단하는 역할
+	public static boolean decisionBall(int[] comArr, int[] userArr) {
+		boolean isGameRun = true;
+		String result = "";
+		
+		int strike = 0, ball = 0;
+		for(int i = 0; i< comArr.length; i++) {
+			for(int j = 0; j < userArr.length; j++) {
+				// 숫자 일치
+				if(comArr[i] == userArr[j]) {
+					// 자릿수까지 일치 
+					if(i == j) 
+						strike++;
+					else
+						ball++;
+				}
+ 			}
+		}
+		
+		if(strike == 3) 
+			isGameRun = false;
+		
+		result = "strike =" + strike + ", ball = " + ball;
+		System.out.println(result);
+		
+		return isGameRun;
 	}
 
 }

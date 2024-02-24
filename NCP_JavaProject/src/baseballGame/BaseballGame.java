@@ -8,6 +8,10 @@ import java.io.*;
 import java.net.*;
 
 public class BaseballGame extends JFrame {
+	// TODO
+	// 유저 입력 배열 
+	int[] userArr = new int[3];
+	
 	// 통신
 	private Socket socket;
 	private PrintWriter printWriter;
@@ -26,6 +30,10 @@ public class BaseballGame extends JFrame {
 
 	// 유저가 입력한 숫자 패널
 	private JPanel numPanel;
+	
+	// TODO
+	// 유저 입력 배열 보이게 하는 라벨 
+	private JLabel userArrLabel;
 
 	// 유저가 입력했던 숫자 모음 영역 
 	private JPanel userPanel;
@@ -168,8 +176,10 @@ public class BaseballGame extends JFrame {
 		button8 = new JButton(icon8);
 		button9 = new JButton(icon9);
 
+		// TODO
 		// 라벨
-		
+		userArrLabel = new JLabel();
+		userArrLabel.setFont(new Font("Lucida Grande", Font.BOLD, 14));
 
 		// 폰트
 		smallFont = new Font("맑은고딕", Font.PLAIN, 16);
@@ -242,6 +252,9 @@ public class BaseballGame extends JFrame {
 		mainPanel.add(userPanel);
 		mainPanel.add(keyboardPanel);
 		
+		// TODO
+		numPanel.add(userArrLabel);
+		
 		userPanel.setLayout(null); // 지우지마!! 
 
 		userPanel.add(panel1);
@@ -278,53 +291,90 @@ public class BaseballGame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// ex)
 				printWriter.println("baseball&" + "클라이언트");
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				addUserInput(1);
 			}
 		});
 		button2.addActionListener(new ActionListener() {
-
+			@Override
 			public void actionPerformed(ActionEvent e) {
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				addUserInput(2);
 			}
 		});
 		button3.addActionListener(new ActionListener() {
-
+			@Override
 			public void actionPerformed(ActionEvent e) {
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				addUserInput(3);
 			}
 		});
 		button4.addActionListener(new ActionListener() {
-
+			@Override
 			public void actionPerformed(ActionEvent e) {
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				addUserInput(4);
 			}
 		});
 		button5.addActionListener(new ActionListener() {
-
+			@Override
 			public void actionPerformed(ActionEvent e) {
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				addUserInput(5);
 			}
 		});
 		button6.addActionListener(new ActionListener() {
-
+			@Override
 			public void actionPerformed(ActionEvent e) {
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				addUserInput(6);
 			}
 		});
 		button7.addActionListener(new ActionListener() {
-
+			@Override
 			public void actionPerformed(ActionEvent e) {
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				addUserInput(7);
 			}
 		});
 		button8.addActionListener(new ActionListener() {
-
+			@Override
 			public void actionPerformed(ActionEvent e) {
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				addUserInput(8);
 			}
 		});
 		button9.addActionListener(new ActionListener() {
-
+			@Override
 			public void actionPerformed(ActionEvent e) {
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				addUserInput(9);
 			}
 		});
 		button0.addActionListener(new ActionListener() {
-
+			@Override
 			public void actionPerformed(ActionEvent e) {
+				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가 
+				addUserInput(0);
 			}
 		});
-
+	}
+	
+	// 사용자 입력을 userArr에 추가하고 userArrLabel에 표시하는 메소드 
+	private void addUserInput(int number) {
+		for(int i = 0; i < userArr.length; i++) {
+			if(userArr[i] == 0) {
+				userArr[i] = number;
+				break;
+			}
+		}
+		// userArr를 문자열로 변환하여 userArrLabel에 설정
+	    StringBuilder userInputBuilder = new StringBuilder();
+	    for (int i = 0; i < userArr.length; i++) {
+	        if (userArr[i] != 0) {
+	            userInputBuilder.append(userArr[i]);
+	        }
+	    }
+	    userArrLabel.setText(userInputBuilder.toString());
 	}
 }
