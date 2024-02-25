@@ -49,6 +49,10 @@ public class MemoryGame extends JFrame implements ActionListener{
 		startGame();
 	}
 
+	public MemoryGame(Socket socket) {
+		main(null);
+	}
+
 	// 이미지 목록 생성
 	private List<ImageIcon> generateSymbols() {
 		List<ImageIcon> symbols = new ArrayList<>();
@@ -125,7 +129,8 @@ public class MemoryGame extends JFrame implements ActionListener{
 	}
 
 	public static void main(String[] args) {
-		
+		MemoryGame game = new MemoryGame();
+		game.setVisible(true);
 	}
 
 }
