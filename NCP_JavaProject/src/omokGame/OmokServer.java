@@ -7,9 +7,14 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import javax.swing.JOptionPane;
+
 import Server.Game;
 
-public class OmokServer implements Game {
+public class OmokServer  extends OmokGame implements Game {
+	
+
+
 	private Socket socket;
 	
 	  public static void main(String[] args) {
@@ -92,7 +97,107 @@ public class OmokServer implements Game {
 				}
 			}
 		}
-	}
+			//오목 승리 조건 체크 메서드
+			public void checkWin(GoEgg e) {
+				//오목 조건 체크
+				int checkx = e.x;
+				int checky = e.y;
+				int count = 0;
+				//세로 방향 체크
+				while (checky >= 0 && goEgg[checkx][checky].state.equals(e.state)) {
+					checky -= 1;
+				}
+				checky += 1;
+				while (checky < 26 && goEgg[checkx][checky].state.equals(e.state)) {
+					checky += 1;
+					count++;
+				}
+				if (count == 5) {
+					if (e.state.equals("B")) {
+						JOptionPane.showMessageDialog(null,  "흑돌이 승리했습니다.","게임종료", JOptionPane.QUESTION_MESSAGE);
+					} else {
+						JOptionPane.showMessageDialog(null, "백돌이 승리했습니다.","게임종료", JOptionPane.QUESTION_MESSAGE);
+					}
+
+				}
+				/////////////////////////////////
+				checkx = e.x;
+				checky = e.y;
+				count = 0;
+				
+				//가로 방향 체크
+				while (checkx >= 0 && goEgg[checkx][checky].state.equals(e.state)) {
+					checkx -= 1;
+				}
+				checkx += 1;
+				while (checkx < 26 && goEgg[checkx][checky].state.equals(e.state)) {
+					checkx += 1;
+					count++;
+				}
+				if (count == 5) {
+					if (e.state.equals("B")) {
+						JOptionPane.showMessageDialog(null, "흑돌이 승리했습니다.","게임종료", JOptionPane.QUESTION_MESSAGE);
+					} else {
+						JOptionPane.showMessageDialog(null, "백돌이 승리했습니다.","게임종료", JOptionPane.QUESTION_MESSAGE);
+					}
+				}
+				////////////////////
+				checkx = e.x;
+				checky = e.y;
+				count = 0;
+
+				//↖방향 체크
+				while (checkx >= 0 && checky >= 0 && goEgg[checkx][checky].state.equals(e.state)) {
+					checkx -= 1;
+					checky -= 1;
+				}
+				checkx += 1;
+				checky += 1;
+				while (checkx < 26 && checky < 26 && goEgg[checkx][checky].state.equals(e.state)) {
+					checkx += 1;
+					checky += 1;
+					count++;
+				}
+				if (count == 5) {
+					if (e.state.equals("B")) {
+						JOptionPane.showMessageDialog(null, "흑돌이 승리했습니다.","게임종료", JOptionPane.QUESTION_MESSAGE);
+					} else {
+						JOptionPane.showMessageDialog(null, "백돌이 승리했습니다.","게임종료", JOptionPane.QUESTION_MESSAGE);
+					}
+				}
+				//		//////////////////
+				checkx = e.x;
+				checky = e.y;
+				count = 0;
+
+				//↗↙방향 체크
+				while (checkx >= 0 && checky < 26 && goEgg[checkx][checky].state.equals(e.state)) {
+					checkx -= 1;
+					checky += 1;
+				}
+				checkx += 1;
+				checky -= 1;
+				while (checkx < 26 && checky >= 0 && goEgg[checkx][checky].state.equals(e.state)) {
+					checkx += 1;
+					checky -= 1;
+					count++;
+				}
+
+				if (count == 5) {
+					if (e.state.equals("B")) {
+						JOptionPane.showMessageDialog(null, "흑돌이 승리했습니다.","게임종료", JOptionPane.QUESTION_MESSAGE);
+					} else {
+						JOptionPane.showMessageDialog(null, "백돌이 승리했습니다.","게임종료", JOptionPane.QUESTION_MESSAGE);
+					}
+				}
+
+			}
+			
+			
+			
+		}
+
+		
 	
 
 	public void startgame() {
