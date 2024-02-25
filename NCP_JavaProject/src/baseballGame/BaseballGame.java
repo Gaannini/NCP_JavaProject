@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.*;
+import javax.swing.border.LineBorder;
 
 public class BaseballGame extends JFrame {
 	// 통신
@@ -37,6 +38,9 @@ public class BaseballGame extends JFrame {
 
 	// 유저가 입력한 숫자 채점
 	private MarkingPanel markingPanel;
+	
+	// 오답 노트 라벨 
+	private JLabel wrongJLabel;
 
 	// 유저가 입력했던 오답 숫자
 	private JPanel wrongPanel;
@@ -47,6 +51,12 @@ public class BaseballGame extends JFrame {
 
 	// 입력 확인 버튼
 	private JButton inputButton;
+	
+	// 다시 하기 버튼
+	private JButton replayButton;
+	
+	// 설명서 보기 버튼
+	private JButton manualButton;
 
 	// 키보드 패널
 	private JPanel keyboardPanel;
@@ -318,8 +328,8 @@ public class BaseballGame extends JFrame {
 		wrongPanel.setBackground(new Color(240, 255, 240));
 
 		keyboardPanel = new JPanel();
-		keyboardPanel.setBackground(new Color(255, 255, 255));
-
+		keyboardPanel.setBackground(new Color(255, 255, 255)); 
+	    
 		// 이미지
 		iconBack = new ImageIcon(getClass().getResource("/baseballGame/imgs/back.jpeg"));
 		icon1 = new ImageIcon(getClass().getResource("/baseballGame/imgs/icon1.jpeg"));
@@ -333,7 +343,9 @@ public class BaseballGame extends JFrame {
 		icon9 = new ImageIcon(getClass().getResource("/baseballGame/imgs/icon9.jpeg"));
 
 		// 버튼
-		inputButton = new JButton("확인");
+		inputButton = new JButton("입력");
+		replayButton = new JButton("다시하기");
+		manualButton = new JButton("설명서보기");
 
 		backButton = new JButton(iconBack);
 		button1 = new JButton(icon1);
@@ -348,7 +360,7 @@ public class BaseballGame extends JFrame {
 
 		// 라벨
 		userArrLabel = new JLabel();
-		userArrLabel.setFont(new Font("Lucida Grande", Font.BOLD, 14));
+		wrongJLabel = new JLabel("NOTE");
 	}
 
 	private void setting() {
@@ -374,10 +386,15 @@ public class BaseballGame extends JFrame {
 		markingPanel.setVisible(true);
 		markingPanel.setBounds(0, 0, 285, 472);
 
+		wrongJLabel.setBounds(380, 30, 100, 40);
+		wrongJLabel.setFont(customFont.deriveFont(Font.PLAIN, 30));
+		
 		wrongPanel.setVisible(true);
 		wrongPanel.setBounds(285, 200, 285, 472);
 
-		inputButton.setBounds(479, 674, 117, 29);
+		inputButton.setBounds(480, 674, 120, 29);
+		replayButton.setBounds(365, 674, 120, 29);
+		manualButton.setBounds(250, 674, 120, 29);
 
 		keyboardPanel.setVisible(true);
 		keyboardPanel.setBounds(15, 700, 590, 230);
@@ -422,12 +439,19 @@ public class BaseballGame extends JFrame {
 		userPanel.setLayout(null);
 		userPanel.add(markingPanel);
 
-		wrongList = new JList<>(wrongListModel);
-		wrongList.setBounds(289, 0, 281, 468);
-
 		userPanel.add(wrongList);
-
+		userPanel.add(wrongJLabel);
+		
+		wrongList = new JList<>(wrongListModel);
+		
+		// TODO : 프로그레스 바
+		JProgressBar progressBar = new JProgressBar();
+		progressBar.setBounds(300, 80, 260, 20);
+		userPanel.add(progressBar);
+		
 		mainPanel.add(inputButton);
+		mainPanel.add(replayButton);
+		mainPanel.add(manualButton);
 
 		keyboardPanel.add(button1);
 		keyboardPanel.add(button2);
@@ -571,7 +595,9 @@ public class BaseballGame extends JFrame {
 	// 오답 숫자 리스트 패널 초기화
 	private void initWrongPanel() {
 		wrongListModel = new DefaultListModel<>();
-		wrongList = new JList<>(wrongListModel);
+	    wrongList = new JList<>(wrongListModel);
+	    wrongList.setSize(260, 330);
+	    wrongList.setLocation(300, 120);
 	}
 
 	// 오답 숫자를 리스트에 추가하는 메서드
