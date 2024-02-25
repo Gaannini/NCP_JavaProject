@@ -519,7 +519,6 @@ public class GameClientGUI extends JFrame {
 	}
 
 	// 서버연결메소드
-	// 접속 시 서버 연결 메서드.
 	private void connectServer() {
 		try {
 			socket = new Socket(server, serverPort);
@@ -556,7 +555,6 @@ public class GameClientGUI extends JFrame {
 
 	}
 
-	// 서버에 아이디 전송 메소드
 	// ID를 서버에 전달하는 메소드
 	private void sendInsertId() {
 		try {
@@ -583,7 +581,6 @@ public class GameClientGUI extends JFrame {
 		}
 	}
 
-	// 서버에 채팅전송 메소드
 	// 채팅을 서버에 전달하는 메소드
 	private void sendchat() {
 		try {
@@ -599,7 +596,6 @@ public class GameClientGUI extends JFrame {
 		}
 	}
 
-	// 서버에 선택한 게임 전송 메소드
 	// 게임을 선택하고 선택한 게임을 서버에 보내는 메소드
 	private void sendSelectgame(String gamename) {
 		writer.println("gamename&" + gamename);
@@ -614,7 +610,6 @@ public class GameClientGUI extends JFrame {
 		return xyImage;
 	}
 
-	// 메인패널에 이미지 삽입을 위한 메소드
 	// 이미지 삽입 패널 클래스(게임배경)
 	class MainPanel extends JPanel {
 		private ImageIcon icon = new ImageIcon(getClass().getResource("/Client/images/gamemainbg.png"));
