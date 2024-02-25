@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import baseballGame.BaseballServer;
-import bingoGame.BingoGame;
 import exgame.exgameserver;
 import memoryGame.MemoryServer;
 import omokGame.OmokServer;
@@ -29,7 +28,7 @@ public class GameServer {
 		clientIds = new HashMap<>();
 		games = new HashMap<String, Game>();
 		games.put("memory", new MemoryServer());
-		games.put("omok", new OmokServer());
+		games.put("omok", (Game) new OmokServer());
 		games.put("ex", new exgameserver());
 		games.put("baseball", new BaseballServer());
 
