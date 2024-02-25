@@ -12,8 +12,10 @@ public class BaseballServer implements Game {
 	private PrintWriter writer;
 	private BufferedReader reader;
 
+	// 난수 배열
 	private int[] comArr;
 
+	// 스트라이크 | 볼 | 아웃
 	private int strike;
 	private int ball;
 	private boolean out;
@@ -24,20 +26,18 @@ public class BaseballServer implements Game {
 		System.out.println("##############[SERVER] 콘솔창##############");
 
 		this.socket = socket;
-		new ServerThread(socket).start(); // 클라이언트 연결을 처리하는 쓰레드 시작
+		new ServerThread(socket).start(); // 클라이언트 연결 처리 스레드 시작  
 
 		// 난수 생성 메소드 호출
 		comArr = getRandomNum();
-		System.out.println("[SERVER -> SERVER] 난수 생성 : " + Arrays.toString(comArr));
+		System.out.println("[SERVER -> SERVER] 난수 생성 : " + Arrays.toString(comArr) + "\n");
 	}
 
 	// 네트워크 통신을 처리하는 스레드
 	public class ServerThread extends Thread {
 		private Socket socket; // 클라이언트 소켓을 받아서 사용하는 변수
-		public PrintWriter writer; // 쓰기 버퍼.
-		private BufferedReader reader; // 읽기 버퍼.
 
-		public int[] userArr_; // 유저 입력한 배열
+		public int[] userArr_; // 유저 입력 배열
 
 		public ServerThread(Socket socket) {
 			this.socket = socket;
@@ -55,7 +55,6 @@ public class BaseballServer implements Game {
 				String clientMsg;
 				while ((clientMsg = reader.readLine()) != null) {
 					String[] parsedMsg = clientMsg.split("&");
-					// Client Thread에서 동작하는 프로토콜
 					handleProtocol(parsedMsg);
 
 					// [SERVER -> CLIENT] : 스트라이크와 볼 정보 [strike 수, ball 수]
@@ -103,7 +102,7 @@ public class BaseballServer implements Game {
 		}
 	}
 
-	// 난수 생성 메소드
+	// 난수 생성 메소드 (1 ~ 9)
 	public static int[] getRandomNum() {
 		int[] numArr = new int[3];
 		// 1번째 난수 생성
@@ -132,7 +131,7 @@ public class BaseballServer implements Game {
 		return numArr;
 	}
 
-	// 스트라이크, 볼을 판단하는 역할
+	// 스트라이크, 볼, 아웃을 판단하는 메소드 
 	public static String decisionBall(int[] comArr, int[] userArr) {
 		String result = "";
 		int strike = 0;

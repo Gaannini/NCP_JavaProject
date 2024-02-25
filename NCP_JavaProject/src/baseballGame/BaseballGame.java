@@ -5,7 +5,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.*;
-import java.util.Arrays;
 
 public class BaseballGame extends JFrame {
 	// 통신
@@ -41,6 +40,10 @@ public class BaseballGame extends JFrame {
 
 	// 유저가 입력했던 오답 숫자
 	private JPanel wrongPanel;
+
+	// 오답 숫자 리스트를 저장할 모델
+	private DefaultListModel<String> wrongListModel;
+	private JList<String> wrongList;
 
 	// 입력 확인 버튼
 	private JButton inputButton;
@@ -82,6 +85,25 @@ public class BaseballGame extends JFrame {
 		return xyImage;
 	}
 
+	public class CustomListCellRenderer extends JLabel implements ListCellRenderer<String> {
+		private Font font;
+
+		public CustomListCellRenderer(Font font) {
+			this.font = font;
+			setOpaque(true);
+		}
+
+		@Override
+		public Component getListCellRendererComponent(JList<? extends String> list, String value, int index,
+				boolean isSelected, boolean cellHasFocus) {
+			setText(value);
+			setFont(font);
+			setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
+			setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
+			return this;
+		}
+	}
+
 	// 이미지 삽입 패널 클래스
 	class NamePanel extends JPanel {
 		private ImageIcon icon = new ImageIcon(getClass().getResource("/baseballGame/imgs/title.jpeg"));
@@ -115,71 +137,56 @@ public class BaseballGame extends JFrame {
 			if (strike == 3) {
 				setFont(customFont.deriveFont(Font.PLAIN, 60)); // 폰트설정
 				g.drawString("홈S2런", 70, 236);
-			} 
-			else {
+			} else {
 				if (strike == 0) {
 					g.setColor(Color.RED);
 					g.drawString("STRIKE", 50, 120);
 					g.drawOval(50, 120, 50, 50);
 					g.drawOval(120, 120, 50, 50);
 					g.drawOval(190, 120, 50, 50);
-				} 
-				else if (strike == 1)
-				{
+				} else if (strike == 1) {
 					g.setColor(Color.RED);
 					g.drawString("STRIKE", 50, 120);
 					g.fillOval(50, 120, 50, 50);
 					g.drawOval(120, 120, 50, 50);
 					g.drawOval(190, 120, 50, 50);
-				} 
-				else if (strike == 2)
-				{
+				} else if (strike == 2) {
 					g.setColor(Color.RED);
 					g.drawString("STRIKE", 50, 120);
 					g.fillOval(50, 120, 50, 50);
 					g.fillOval(120, 120, 50, 50);
 					g.drawOval(190, 120, 50, 50);
 				}
-				if (ball == 0)
-				{
+				if (ball == 0) {
 					g.setColor(Color.BLUE);
 					g.drawString("BALL", 50, 230);
 					g.drawOval(50, 230, 50, 50);
 					g.drawOval(120, 230, 50, 50);
 					g.drawOval(190, 230, 50, 50);
-				} 
-				else if (ball == 1) 
-				{
+				} else if (ball == 1) {
 					g.setColor(Color.BLUE);
 					g.drawString("BALL", 50, 230);
 					g.fillOval(50, 230, 50, 50);
 					g.drawOval(120, 230, 50, 50);
 					g.drawOval(190, 230, 50, 50);
-				} 
-				else if (ball == 2) 
-				{
+				} else if (ball == 2) {
 					g.setColor(Color.BLUE);
 					g.drawString("BALL", 50, 230);
 					g.fillOval(50, 230, 50, 50);
 					g.fillOval(120, 230, 50, 50);
 					g.drawOval(190, 230, 50, 50);
-				} 
-				else if (ball == 3)
-				{
+				} else if (ball == 3) {
 					g.setColor(Color.BLUE);
 					g.drawString("BALL", 50, 230);
 					g.fillOval(50, 230, 50, 50);
 					g.fillOval(120, 230, 50, 50);
 					g.fillOval(190, 230, 50, 50);
 				}
-				if (!out)
-				{
+				if (!out) {
 					g.setColor(Color.ORANGE);
 					g.drawString("OUT", 50, 340);
 					g.drawOval(50, 340, 50, 50);
-				} 
-				else
-				{
+				} else {
 					g.setColor(Color.ORANGE);
 					g.drawString("OUT", 50, 340);
 					g.fillOval(50, 340, 50, 50);
@@ -190,6 +197,7 @@ public class BaseballGame extends JFrame {
 
 	// BaseballGame 생성자
 	public BaseballGame(Socket socket) {
+		// 폰트
 		try {
 			customFont = Font.createFont(Font.TRUETYPE_FONT, new File(fontFilePath));
 			ge.registerFont(customFont);
@@ -207,7 +215,7 @@ public class BaseballGame extends JFrame {
 		setVisible(true);
 
 		this.socket = socket;
-		new ClientThread().start();
+		new ClientThread().start(); // 서버 연결 처리 스레드 시작
 	}
 
 	// 네트워크 통신을 처리하는 스레드
@@ -238,12 +246,11 @@ public class BaseballGame extends JFrame {
 				reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
 				/*
-				 * 메세지 처리 루프 클라이언트로부터 메시지를 읽고, 이를 '&'를 기준으로 나누어 handleProtocol() 메소드 호출
+				 * 메세지 처리 루프 서버로부터 메시지를 읽고, 이를 '&'를 기준으로 나누어 handleProtocol() 메소드 호출
 				 */
 				String serverMsg;
 				while ((serverMsg = reader.readLine()) != null) {
 					String[] parsedMsg = serverMsg.split("&");
-					// Client Thread에서 동작하는 프로토콜
 					handleProtocol(parsedMsg);
 				}
 
@@ -267,7 +274,7 @@ public class BaseballGame extends JFrame {
 			}
 		}
 
-		// 프로토콜 처리: 받은 메시지를 프로토콜에 따라 처리한다.
+		// 프로토콜 처리: 받은 메시지를 프로토콜에 따라 처리
 		private void handleProtocol(String[] parsedMsg) {
 			if (parsedMsg.length >= 2) {
 				String protocol = parsedMsg[0];
@@ -280,10 +287,11 @@ public class BaseballGame extends JFrame {
 					String[] result = data.split(",");
 					int strike = Integer.parseInt(result[0]);
 					int ball = Integer.parseInt(result[1]);
-					boolean out = false;
+					boolean out = strike == 0 && ball == 0;
 					markingPanel.setData(strike, ball, out);
-					// 화면 갱신을 위해 다시 그리기
 					markingPanel.repaint();
+
+					addWrongGuess(userArrToString(), strike, ball);
 					break;
 				}
 			}
@@ -305,9 +313,7 @@ public class BaseballGame extends JFrame {
 		numPanel.setBorder(null);
 		userPanel = new JPanel();
 		userPanel.setBackground(new Color(255, 255, 255));
-		userPanel.setLocation(26, 205);
-		userPanel.setSize(561, 472);
-		markingPanel = new MarkingPanel(); // Panel1 객체 생성
+		markingPanel = new MarkingPanel();
 		markingPanel.setBackground(new Color(255, 255, 255));
 		wrongPanel = new JPanel();
 		wrongPanel.setBorder(null);
@@ -350,8 +356,8 @@ public class BaseballGame extends JFrame {
 	private void setting() {
 		setTitle("숫자 야구 게임");
 		setSize(620, 1000);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 창 닫기 버튼
-		setResizable(false); // 유저가 크기 조절 못하게 함
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setResizable(false);
 
 		setContentPane(mainPanel);
 
@@ -362,15 +368,18 @@ public class BaseballGame extends JFrame {
 		numPanel.setBounds(26, 112, 570, 70);
 		numPanel.setBackground(new Color(240, 255, 255));
 
-		userArrLabel.setFont(customFont.deriveFont(Font.PLAIN, 40)); // 폰트설정
+		userArrLabel.setFont(customFont.deriveFont(Font.PLAIN, 40));
 
 		userPanel.setVisible(true);
 		userPanel.setBounds(26, 200, 570, 472);
+//		userPanel.setLocation(26, 205);
+//		userPanel.setSize(561, 472);
 
 		markingPanel.setVisible(true);
 		markingPanel.setBounds(0, 0, 285, 472);
+
 		wrongPanel.setVisible(true);
-		wrongPanel.setBounds(285, 0, 285, 472);
+		wrongPanel.setBounds(285, 200, 285, 472);
 
 		inputButton.setBounds(479, 674, 117, 29);
 
@@ -407,16 +416,20 @@ public class BaseballGame extends JFrame {
 		mainPanel.setLayout(null);
 		mainPanel.add(numPanel);
 		mainPanel.add(namePanel);
-
 		mainPanel.add(userPanel);
 		mainPanel.add(keyboardPanel);
 
+		initWrongPanel();
+
 		numPanel.add(userArrLabel);
 
-		userPanel.setLayout(null); // 지우지마!!
-
+		userPanel.setLayout(null);
 		userPanel.add(markingPanel);
-		userPanel.add(wrongPanel);
+
+		wrongList = new JList<>(wrongListModel);
+		wrongList.setBounds(289, 0, 281, 468);
+
+		userPanel.add(wrongList);
 
 		mainPanel.add(inputButton);
 
@@ -446,6 +459,7 @@ public class BaseballGame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가
 				addUserInput(1);
+				updateUserArrLabel();
 			}
 		});
 		button2.addActionListener(new ActionListener() {
@@ -453,6 +467,7 @@ public class BaseballGame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가
 				addUserInput(2);
+				updateUserArrLabel();
 			}
 		});
 		button3.addActionListener(new ActionListener() {
@@ -460,6 +475,7 @@ public class BaseballGame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가
 				addUserInput(3);
+				updateUserArrLabel();
 			}
 		});
 		button4.addActionListener(new ActionListener() {
@@ -467,6 +483,7 @@ public class BaseballGame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가
 				addUserInput(4);
+				updateUserArrLabel();
 			}
 		});
 		button5.addActionListener(new ActionListener() {
@@ -474,6 +491,7 @@ public class BaseballGame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가
 				addUserInput(5);
+				updateUserArrLabel();
 			}
 		});
 		button6.addActionListener(new ActionListener() {
@@ -481,6 +499,7 @@ public class BaseballGame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가
 				addUserInput(6);
+				updateUserArrLabel();
 			}
 		});
 		button7.addActionListener(new ActionListener() {
@@ -488,6 +507,7 @@ public class BaseballGame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가
 				addUserInput(7);
+				updateUserArrLabel();
 			}
 		});
 		button8.addActionListener(new ActionListener() {
@@ -495,6 +515,7 @@ public class BaseballGame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가
 				addUserInput(8);
+				updateUserArrLabel();
 			}
 		});
 		button9.addActionListener(new ActionListener() {
@@ -502,6 +523,7 @@ public class BaseballGame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// 사용자가 버튼을 클릭하면 해당 숫자를 userArr에 추가
 				addUserInput(9);
+				updateUserArrLabel();
 			}
 		});
 		backButton.addActionListener(new ActionListener() {
@@ -520,7 +542,7 @@ public class BaseballGame extends JFrame {
 		});
 	}
 
-	// 사용자 입력을 userArr에 추가하고 userArrLabel에 표시하는 메소드
+	// 숫자 버튼 클릭 시 배열에 추가하는 메소드
 	private void addUserInput(int number) {
 		for (int i = 0; i < userArr.length; i++) {
 			if (userArr[i] == 0) {
@@ -528,14 +550,6 @@ public class BaseballGame extends JFrame {
 				break;
 			}
 		}
-		// userArr를 문자열로 변환하여 userArrLabel에 설정
-		StringBuilder userInputBuilder = new StringBuilder();
-		for (int i = 0; i < userArr.length; i++) {
-			if (userArr[i] != 0) {
-				userInputBuilder.append(userArr[i]);
-			}
-		}
-		userArrLabel.setText(userInputBuilder.toString());
 	}
 
 	// userArr를 문자열로 변환하여 userArrLabel에 설정
@@ -549,4 +563,31 @@ public class BaseballGame extends JFrame {
 		userArrLabel.setText(userInputBuilder.toString());
 	}
 
+	// 사용자 입력 배열을 문자열로 변환하는 메서드
+	private String userArrToString() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < userArr.length; i++) {
+			sb.append(userArr[i]);
+		}
+		return sb.toString();
+	}
+
+	private void initWrongPanel() {
+		// 오답 숫자 리스트 패널 초기화
+		wrongListModel = new DefaultListModel<>();
+		wrongList = new JList<>(wrongListModel);
+
+		// ListCellRenderer를 사용하여 폰트 설정
+		wrongList.setCellRenderer(new CustomListCellRenderer(customFont.deriveFont(Font.PLAIN, 18)));
+
+		// 패널에 스크롤 패널 추가
+		wrongPanel.setLayout(new BorderLayout());
+		wrongPanel.add(new JScrollPane(wrongList), BorderLayout.CENTER);
+	}
+
+	// 오답 숫자를 리스트에 추가하는 메서드
+	private void addWrongGuess(String userArrString, int strike, int ball) {
+		String guessInfo = String.format("%s | STRIKE : %d, BALL : %d", userArrString, strike, ball);
+		wrongListModel.addElement(guessInfo);
+	}
 }
