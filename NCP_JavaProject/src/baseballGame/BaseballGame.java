@@ -76,6 +76,9 @@ public class BaseballGame extends JFrame {
 	private ImageIcon icon8;
 	private ImageIcon icon9;
 	private ImageIcon iconBack;
+	
+	// 홈런 여부 
+	public String homeString;
 
 	// 이미지 아이콘 크기 조절 메소드
 	private ImageIcon ImageSetSize(ImageIcon icon, int width, int heigth) {
@@ -195,6 +198,8 @@ public class BaseballGame extends JFrame {
 		batch();
 		listener();
 		setVisible(true);
+		
+	    setLocationRelativeTo(null);
 
 		this.socket = socket;
 		new ClientThread().start(); // 서버 연결 처리 스레드 시작
@@ -274,6 +279,17 @@ public class BaseballGame extends JFrame {
 					markingPanel.repaint();
 
 					addWrongGuess(userArrToString(), strike, ball);
+				case "homerunString":
+					System.out.println("[SERVER] -> [CLIENT] 홈런 여부 : " + data);
+					// 서버로부터 받은 메시지가 홈런인지 확인
+					String homerunString = data;
+					if ("홈런".equals(data)) {
+                        int choice = JOptionPane.showConfirmDialog(null, "홈런입니다! 게임을 종료하시겠습니까?", "홈런!", JOptionPane.YES_NO_OPTION);
+                        if (choice == JOptionPane.YES_OPTION) {
+                            // 사용자가 게임 종료를 선택하면 프로그램 종료
+                            System.exit(0);
+                        }
+                    }
 					break;
 				}
 			}
