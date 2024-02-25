@@ -85,25 +85,6 @@ public class BaseballGame extends JFrame {
 		return xyImage;
 	}
 
-	public class CustomListCellRenderer extends JLabel implements ListCellRenderer<String> {
-		private Font font;
-
-		public CustomListCellRenderer(Font font) {
-			this.font = font;
-			setOpaque(true);
-		}
-
-		@Override
-		public Component getListCellRendererComponent(JList<? extends String> list, String value, int index,
-				boolean isSelected, boolean cellHasFocus) {
-			setText(value);
-			setFont(font);
-			setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
-			setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
-			return this;
-		}
-	}
-
 	// 이미지 삽입 패널 클래스
 	class NamePanel extends JPanel {
 		private ImageIcon icon = new ImageIcon(getClass().getResource("/baseballGame/imgs/title.jpeg"));
@@ -116,6 +97,7 @@ public class BaseballGame extends JFrame {
 		}
 	}
 
+	// 그리기 패널 클래스 
 	class MarkingPanel extends JPanel {
 		private int strike = 0;
 		private int ball = 0;
@@ -372,8 +354,6 @@ public class BaseballGame extends JFrame {
 
 		userPanel.setVisible(true);
 		userPanel.setBounds(26, 200, 570, 472);
-//		userPanel.setLocation(26, 205);
-//		userPanel.setSize(561, 472);
 
 		markingPanel.setVisible(true);
 		markingPanel.setBounds(0, 0, 285, 472);
@@ -572,17 +552,10 @@ public class BaseballGame extends JFrame {
 		return sb.toString();
 	}
 
+	// 오답 숫자 리스트 패널 초기화
 	private void initWrongPanel() {
-		// 오답 숫자 리스트 패널 초기화
 		wrongListModel = new DefaultListModel<>();
 		wrongList = new JList<>(wrongListModel);
-
-		// ListCellRenderer를 사용하여 폰트 설정
-		wrongList.setCellRenderer(new CustomListCellRenderer(customFont.deriveFont(Font.PLAIN, 18)));
-
-		// 패널에 스크롤 패널 추가
-		wrongPanel.setLayout(new BorderLayout());
-		wrongPanel.add(new JScrollPane(wrongList), BorderLayout.CENTER);
 	}
 
 	// 오답 숫자를 리스트에 추가하는 메서드
