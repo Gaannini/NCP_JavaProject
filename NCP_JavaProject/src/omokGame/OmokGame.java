@@ -25,8 +25,8 @@ public class OmokGame extends JFrame implements Game {
 	ImageIcon white = new ImageIcon("images//white.png");
 	ImageIcon black = new ImageIcon("images//black.png");
 	ImageIcon turn = black;
-
-	public OmokGame() {
+	
+		public OmokGame() {
 		
 	}
 	public void startgame() {
