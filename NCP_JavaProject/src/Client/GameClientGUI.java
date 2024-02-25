@@ -491,9 +491,8 @@ public class GameClientGUI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				GameName = "memory";
-//				sendSelectgame(GameName);
-
-				MemoryGame.main(null);
+				sendSelectgame(GameName);
+				MemoryGame memorygame = new MemoryGame(socket);
 			}
 		});
 

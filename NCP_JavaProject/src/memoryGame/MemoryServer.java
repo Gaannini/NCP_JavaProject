@@ -9,14 +9,11 @@ import Server.Game;
 
 public class MemoryServer implements Game {
 	private Socket socket;
-	MemoryGame omokGame = new MemoryGame();
 	
 	@Override
 	public void start(Socket socket) {
 		this.socket = socket;
 		new clientInfo(socket).start(); // 클라이언트 연결을 처리하는 쓰레드 시작
-		
-		MemoryGame.main(null);	
 	}
 
 	public class clientInfo extends Thread {
@@ -64,10 +61,4 @@ public class MemoryServer implements Game {
 			}
 		}
 	}
-
-	public void startgame() {
-		new MemoryGame();
-		
-	}
-
 }
