@@ -9,34 +9,39 @@ import Server.Game;
 
 public class MemoryServer implements Game {
 	private Socket socket;
-	
+	private PrintWriter writer;
+	private BufferedReader reader;
+
 	@Override
 	public void start(Socket socket) {
+		System.out.println("메모리 서버가 시작되었습니다.");
+		System.out.println("게임 시작");
+
 		this.socket = socket;
-		new clientInfo(socket).start(); // 클라이언트 연결을 처리하는 쓰레드 시작
+		new SeverThread(socket).start(); // 클라이언트 연결 처리 스레드 시작
 	}
 
-	public class clientInfo extends Thread {
-		private Socket socket; // 클라이언트 소켓을 받아서 사용하는 변수
-		public PrintWriter writer; // 쓰기 버퍼.
-		private BufferedReader reader; // 읽기 버퍼.
-		public String memoryMsg; // 클라이언트 아이디를 담는 변수.
-		public String gamename; // 클라이언트가 선택한 게임 이름
+	// 클라이언트 통신을 처리하기 위한 내부 클래스
+	public class SeverThread extends Thread {
+		private Socket socket;
 
-		public clientInfo(Socket socket) {
+		public SeverThread(Socket socket) {
 			this.socket = socket;
 		}
+
+//        private String memoryMsg; // 클라이언트 메시지를 저장하는 변수
+//        private String gamename; // 선택한 게임 이름을 저장하는 변수
 
 		@Override
 		public void run() {
 			try {
+				// 통신 스트림 설정
 				reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				writer = new PrintWriter(socket.getOutputStream(), true);
 
 				String clientMsg;
 				while ((clientMsg = reader.readLine()) != null) {
 					String[] parsedMsg = clientMsg.split("&");
-					// Client Thread에서 동작하는 프로토콜
 					handleProtocol(parsedMsg);
 
 				}
@@ -44,21 +49,19 @@ public class MemoryServer implements Game {
 				e.printStackTrace();
 			}
 		}
+	}
 
-		private void handleProtocol(String[] parsedMsg) {
-			if (parsedMsg.length >= 2) {
-				String protocol = parsedMsg[0];
-				String data = parsedMsg[1];
-
-				switch (protocol) {
-				case "memory":
-					memoryMsg = data;
-					// clientIds.put(socket, clientId);
-					System.out.println(memoryMsg + "확인");
-					break;
-
-				}
-			}
+	public void handleProtocol(String[] parsedMsg) {
+		String protocol = parsedMsg[0];
+		switch (protocol) {
+		case "게임 결과":
+			String result = parsedMsg[1];
+			System.out.println("게임 결과: " + result);
+			// 여기에 결과 처리 로직 추가
+			break;
+		default:
+			System.out.println("알 수 없는 프로토콜입니다.");
+			break;
 		}
 	}
 }

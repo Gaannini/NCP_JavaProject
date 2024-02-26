@@ -4,22 +4,20 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
-import Server.Game;
-
-public class MemoryGame extends JFrame implements ActionListener{
-
+public class MemoryGame extends JFrame implements ActionListener {
+	private Socket socket;
 	private final int BOARD_SIZE = 4; // 보드 크기
 	private final int CARD_SIZE = 100; // 카드 크기
 	private List<ImageIcon> symbols; // 카드에 표시될 이미지 목록
@@ -27,6 +25,7 @@ public class MemoryGame extends JFrame implements ActionListener{
 	private CardButton firstCard; // 첫 번째 선택한 카드
 	private CardButton secondCard; // 두 번째 선택한 카드
 	private long startTime; // 게임 시작 시간
+	private DataOutputStream outputStream;
 
 	public MemoryGame() {
 		setTitle("Memory Game");
@@ -44,8 +43,14 @@ public class MemoryGame extends JFrame implements ActionListener{
 			buttons.add(button);
 			add(button);
 		}
-
-		// 게임 시작
+		try {
+		    socket = new Socket("127.0.0.1", 12345);
+		    outputStream = new DataOutputStream(socket.getOutputStream());
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+		
+		
 		startGame();
 	}
 
@@ -61,7 +66,7 @@ public class MemoryGame extends JFrame implements ActionListener{
 			symbols.add(image);
 			symbols.add(image); // 두 번씩 추가하여 쌍을 이룸
 		}
-		Collections.shuffle(symbols);
+//		Collections.shuffle(symbols);
 		return symbols;
 	}
 
@@ -124,8 +129,22 @@ public class MemoryGame extends JFrame implements ActionListener{
 			long elapsedTime = endTime - startTime; // 소요된 시간 계산
 			double seconds = elapsedTime / 1000.0; // 밀리초를 초로 변환
 			JOptionPane.showMessageDialog(this, "와~~ " + seconds + " 초 걸렸습니다! 짝짝짝..");
+
+			// 결과를 서버에 보냄
+			sendResultToServer(seconds);
+
 			dispose();
 		}
+	}
+
+	private void sendResultToServer(double seconds) {
+		try {
+			// 결과를 서버에 전송
+			outputStream.writeUTF("게임 결과: " + seconds + " 초 걸렸습니다.");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public static void main(String[] args) {
