@@ -73,7 +73,7 @@ public class MemoryGame extends JFrame implements ActionListener {
 //			symbols[i + symbols.length / 2] = image; // 쌍을 이룸
 		}
 		
-//		Collections.shuffle(symbols);
+		Collections.shuffle(symbols);
 		return symbols;
 	}
 
