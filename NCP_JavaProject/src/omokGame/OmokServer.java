@@ -8,9 +8,6 @@ import java.util.Map;
 import Server.Game;
 
 public class OmokServer implements Game {
-
-
-    private Map<int[][], String> playerEgg; //돌변경 위치, 클라이언트1/2
     private static ServerSocket serverSocket; // 서버 소켓.
     private static Socket clientsocket; // 클라이언트가 접속하면 새로 만드는 소켓
 

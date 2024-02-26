@@ -9,7 +9,9 @@ import java.util.Arrays;
 
 import javax.swing.border.LineBorder;
 
-public class BaseballGame extends JFrame {
+import Server.Game;
+
+public class BaseballGame extends JFrame{
 	// 통신
 	private Socket socket;
 	private PrintWriter writer;
@@ -674,4 +676,6 @@ public class BaseballGame extends JFrame {
 		markingPanel.setData(0, 0, false);
 		markingPanel.repaint();
 	}
+
+	
 }

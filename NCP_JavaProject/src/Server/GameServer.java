@@ -28,7 +28,7 @@ public class GameServer {
 		clientIds = new HashMap<>();
 		games = new HashMap<String, Game>();
 		games.put("memory", new MemoryServer());
-		games.put("omok", (Game) new OmokServer());
+		games.put("omok", new OmokServer());
 		games.put("ex", new exgameserver());
 		games.put("baseball", new BaseballServer());
 
