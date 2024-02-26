@@ -3,10 +3,11 @@
  * [1] 두번째 입력부터 입력(inputButton)버튼 두번 눌러야 작동
  * [2] 다시하기도 두번 눌러야 제대로 작동(SERVER 콘솔에서 확인할 수 있음)
  *     한번 누르면 난수가 생성되지만, 000이 들어가기 때문에 한번 더 눌러야 함
+ *     // 가끔은 세번 눌러야함(?)
  * 추가할 점
  * [1] 입력(inputButton)을 누르고 나면 유저 숫자(userArr)가 초기화 되면서 
  *     유저 숫자가 뜨는 라벨(userArrLabel)도 초기화가 돼서 아무것도 안보이게 해야함
- *     --> 임시로, backButton을 3번 누르면서 게임을 진행하고 있음 
+ *     --> 임시로, backButton(숫자 9 버튼 옆에 있는 지우개버튼)을 3번 누르면서 게임을 진행하고 있음 
  */
 package baseballGame;
 
@@ -126,7 +127,7 @@ public class BaseballGame extends JFrame {
 	}
 
 	class ManualPanel extends JPanel {
-		private ImageIcon icon = new ImageIcon(getClass().getResource("/baseballGame/imgs/manual.png"));
+		private ImageIcon icon = new ImageIcon(getClass().getResource("/baseballGame/imgs/gameManual.png"));
 		private Image imgMain = icon.getImage();
 
 		@Override
@@ -326,7 +327,6 @@ public class BaseballGame extends JFrame {
 				case "homerunString":
 					System.out.println("[SERVER] -> [CLIENT] 홈런 여부 : " + data);
 					// 서버로부터 받은 메시지가 홈런인지 확인
-					String homerunString = data;
 					if ("홈런".equals(data)) {
 						int choice = JOptionPane.showConfirmDialog(null, "홈런입니다! 게임을 종료하시겠습니까?", "알림",
 								JOptionPane.YES_NO_OPTION);
@@ -506,13 +506,14 @@ public class BaseballGame extends JFrame {
 	}
 
 	private void listener() {
-		// TODO : 버튼 고쳐야 함 (두번 눌러야 서버에 전송됨, 클릭시 초기화도 해야 함)
+		// TODO : 고쳐야대 
 		inputButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new ClientThread().sendUserArr(userArr);
 			}
 		});
+		// TODO : 고쳐야대 
 		replayButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -659,6 +660,7 @@ public class BaseballGame extends JFrame {
 		wrongList.setValueIsAdjusting(true);
 		wrongList.setSize(260, 330);
 		wrongList.setLocation(300, 120);
+		
 		// 리스트 가운데 정렬 설정
 		DefaultListCellRenderer renderer = (DefaultListCellRenderer) wrongList.getCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -671,8 +673,8 @@ public class BaseballGame extends JFrame {
 
 		// 오답 리스트의 크기 확인
 		if (wrongListModel.size() >= 9) {
-			// 게임에서 졌다는 다이얼로그 생성
 			JOptionPane.showMessageDialog(null, "홈런은 다음 기회에 ㅠㅠ", "알림", JOptionPane.INFORMATION_MESSAGE);
+			
 			// 게임 재시작을 위한 초기화
 			new ClientThread().sendRestart();
 			resetLocalGame();

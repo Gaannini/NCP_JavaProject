@@ -4,9 +4,6 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
 import Server.Game;
 
 public class BaseballServer implements Game {
@@ -65,7 +62,7 @@ public class BaseballServer implements Game {
 					String[] parsedMsg = clientMsg.split("&");
 					handleProtocol(parsedMsg);
 
-					// [SERVER -> CLIENT] : 스트라이크와 볼 정보 [strike 수, ball 수]
+					// [SERVER -> CLIENT] : 스트라이크와 볼 정보 [strike, ball]
 					int[] result = decisionBall(comArr, userArr_);
 					writer.println("result&" + result[0] + "," + result[1]);
 					writer.flush();
@@ -113,7 +110,6 @@ public class BaseballServer implements Game {
 					break;
 				case "replay":
 					if ("다시".equals(data)) {
-						System.out.println("[CLIENT -> SERVER] 다시하기");
 						resetGame();
 					}
 					break;
