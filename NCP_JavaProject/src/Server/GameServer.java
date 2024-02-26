@@ -75,14 +75,16 @@ public class GameServer {
 
 				String clientMsg;
 				while ((clientMsg = reader.readLine()) != null) {
-					System.out.println(clientMsg);
+					System.out.println("clientMsg=" + clientMsg);
 					String[] parsedMsg = clientMsg.split("&");
 					// Client Thread에서 동작하는 프로토콜
+					System.out.println("handleProtocol 처리 전");
 					handleProtocol(parsedMsg);
+					System.out.println("handleProtocol 처리 후");
 					// 받은 클래스 이름을 실행하고 결과를 클라이언트에게 다시 전송
 					PrintWriter out = new PrintWriter(clientsocket.getOutputStream());
 					out.println("서버에서 실행된 결과");
-
+					System.out.println("out.println 처리 후");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -98,18 +100,39 @@ public class GameServer {
 				case "ID":
 					clientId = data;
 					clientIds.put(socket, clientId);
-					System.out.println(clientId + "들어옴");
-
-					// notifyClients(clientId + " is enter the room.", "ID");
-					// sendClientList();
+					String clientinmsg = clientId + "님이 입장하셨습니다.";
+					System.out.println(clientinmsg);
+					broadcast(clientinmsg);
 					break;
 				case "gamename":
-					System.out.println(clientId + "님이 " + data + "게임을 선택하셨습니다.");
+					System.out.println("[" + clientId + "] 님이 " + data + "게임을 선택하셨습니다.");
 					startGame(data, socket); // 클라이언트의 소켓 정보 전달
 					break;
-
-				// Handle other protocols
+				case "CHAT":
+					String chat = "[" + clientId + "] " + data;
+					System.out.println(chat);
+					broadcast(chat);
+					break;
+				case "EXIT":
+					exit = data;
+					String exitmsg = clientId + "님이 " + exit + "하셨습니다.";
+					System.out.println(exitmsg);
+					broadcast(exitmsg);
+					break;
 				}
+			}
+		}
+	}
+
+	public void broadcast(String message) {
+		for (Map.Entry<Socket, String> entry : clientIds.entrySet()) {
+			try {
+				PrintWriter writer = new PrintWriter(entry.getKey().getOutputStream(), true);
+				writer.println("chat@" + message);
+				writer.flush();
+			} catch (IOException e) {
+				System.out.println("Error broadcasting message to client: " + entry.getValue());
+				e.printStackTrace();
 			}
 		}
 	}

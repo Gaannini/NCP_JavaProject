@@ -1,6 +1,9 @@
 package baseballGame;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Arrays;
 
@@ -64,13 +67,13 @@ public class BaseballServer implements Game {
 
 					// [SERVER -> CLIENT] : 스트라이크와 볼 정보 [strike, ball]
 					int[] result = decisionBall(comArr, userArr_);
-					writer.println("result&" + result[0] + "," + result[1]);
+					writer.println("baseball@result&" + result[0] + "," + result[1]);
 					writer.flush();
 					System.out.println("[SERVER -> SERVER] : 스트라이크는 " + result[0] + ", 볼은 " + result[1]);
 
 					// [SERVER -> CLIENT] : 홈런 여부
 					String homerunString = homerun(comArr, userArr_);
-					writer.println("homerunString&" + homerunString);
+					writer.println("baseball@homerunString&" + homerunString);
 					writer.flush();
 				}
 			} catch (Exception e) {
@@ -177,24 +180,24 @@ public class BaseballServer implements Game {
 				}
 			}
 		}
-		result[0] = strike; 
-	    result[1] = ball;  
-	    return result;
+		result[0] = strike;
+		result[1] = ball;
+		return result;
 	}
 
 	// 홈런 여부를 판단하는 메소드
 	public static String homerun(int[] comArr, int[] userArr) {
 		String homerunString = "";
-	    int[] result = decisionBall(comArr, userArr);
-	    int strike = result[0]; 
+		int[] result = decisionBall(comArr, userArr);
+		int strike = result[0];
 
-	    if (strike == 3) {
-	        homerunString = "홈런";
-	        System.out.println("[SERVER -> SERVER] : !!!홈런!!!");
-	        System.out.println("[SERVER -> SERVER] : 라운드 종료");
-	        System.out.println("########################################");
-	    }
-	    return homerunString;
+		if (strike == 3) {
+			homerunString = "홈런";
+			System.out.println("[SERVER -> SERVER] : !!!홈런!!!");
+			System.out.println("[SERVER -> SERVER] : 라운드 종료");
+			System.out.println("########################################");
+		}
+		return homerunString;
 	}
 
 	public int getStrike() {

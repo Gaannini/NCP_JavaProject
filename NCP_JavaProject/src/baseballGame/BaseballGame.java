@@ -10,12 +10,31 @@
  */
 package baseballGame;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.net.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.Arrays;
+
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 public class BaseballGame extends JFrame {
 	// 통신
@@ -104,6 +123,9 @@ public class BaseballGame extends JFrame {
 
 	// 홈런 여부
 	public String homeString;
+
+	// 메인클라이언트로부터 받은 메세지
+	String mainMsg;
 
 	// 이미지 아이콘 크기 조절 메소드
 	private ImageIcon ImageSetSize(ImageIcon icon, int width, int heigth) {
@@ -505,14 +527,14 @@ public class BaseballGame extends JFrame {
 	}
 
 	private void listener() {
-		// TODO : 고쳐야대 
+		// TODO : 고쳐야대
 		inputButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new ClientThread().sendUserArr(userArr);
 			}
 		});
-		// TODO : 고쳐야대 
+		// TODO : 고쳐야대
 		replayButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -618,12 +640,12 @@ public class BaseballGame extends JFrame {
 	// 숫자 버튼 클릭 시 배열에 추가하는 메소드
 	private void addUserInput(int number) {
 		for (int i = 0; i < userArr.length; i++) {
-	        if (userArr[i] == number) {
-	            // 중복 숫자 -> 추가 안함 
-	            return;
-	        }
-	    }
-		
+			if (userArr[i] == number) {
+				// 중복 숫자 -> 추가 안함
+				return;
+			}
+		}
+
 		for (int i = 0; i < userArr.length; i++) {
 			if (userArr[i] == 0) {
 				userArr[i] = number;
@@ -659,7 +681,7 @@ public class BaseballGame extends JFrame {
 		wrongList.setValueIsAdjusting(true);
 		wrongList.setSize(260, 330);
 		wrongList.setLocation(300, 120);
-		
+
 		// 리스트 가운데 정렬 설정
 		DefaultListCellRenderer renderer = (DefaultListCellRenderer) wrongList.getCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -673,7 +695,7 @@ public class BaseballGame extends JFrame {
 		// 오답 리스트의 크기 확인
 		if (wrongListModel.size() >= 9) {
 			JOptionPane.showMessageDialog(null, "홈런은 다음 기회에 ㅠㅠ", "알림", JOptionPane.INFORMATION_MESSAGE);
-			
+
 			// 게임 재시작을 위한 초기화
 			new ClientThread().sendRestart();
 			resetLocalGame();
@@ -688,5 +710,49 @@ public class BaseballGame extends JFrame {
 		wrongListModel.clear();
 		markingPanel.setData(0, 0, false);
 		markingPanel.repaint();
+	}
+
+	public void sendMessageToClient(String message) {
+		mainMsg = message;
+	}
+
+	public void parseHandleProtocol(String serverMsg) {
+		String[] parsedMsg = serverMsg.split("&");
+		handleProtocol(parsedMsg);
+	}
+
+	// 프로토콜 처리: 받은 메시지를 프로토콜에 따라 처리
+	private void handleProtocol(String[] parsedMsg) {
+		if (parsedMsg.length >= 2) {
+			String protocol = parsedMsg[0];
+			String data = parsedMsg[1];
+
+			switch (protocol) {
+			case "result":
+				System.out.println("[SEVER -> CLIENT] 게임 결과 | 스트라이크,볼 : " + data);
+				// 서버로부터 받은 결과를 스트라이크와 볼의 개수로 파싱하여 panel1에 전달
+				String[] result = data.split(",");
+				int strike = Integer.parseInt(result[0]);
+				int ball = Integer.parseInt(result[1]);
+				boolean out = strike == 0 && ball == 0;
+				markingPanel.setData(strike, ball, out);
+				markingPanel.repaint();
+
+				addWrongGuess(userArrToString(), strike, ball);
+			case "homerunString":
+				System.out.println("[SERVER] -> [CLIENT] 홈런 여부 : " + data);
+				// 서버로부터 받은 메시지가 홈런인지 확인
+				String homerunString = data;
+				if ("홈런".equals(data)) {
+					int choice = JOptionPane.showConfirmDialog(null, "홈런입니다! 게임을 종료하시겠습니까?", "홈런!",
+							JOptionPane.YES_NO_OPTION);
+					if (choice == JOptionPane.YES_OPTION) {
+						// 사용자가 게임 종료를 선택하면 프로그램 종료
+						System.exit(0);
+					}
+				}
+				break;
+			}
+		}
 	}
 }
