@@ -1,6 +1,9 @@
 package baseballGame;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Arrays;
 
@@ -26,13 +29,13 @@ public class BaseballServer implements Game {
 		System.out.println("##############[SERVER] 콘솔창##############");
 
 		this.socket = socket;
-		new ServerThread(socket).start(); // 클라이언트 연결 처리 스레드 시작  
+		new ServerThread(socket).start(); // 클라이언트 연결 처리 스레드 시작
 
 		// 난수 생성 메소드 호출
 		comArr = getRandomNum();
 		System.out.println("[SERVER -> SERVER] 난수 생성 : " + Arrays.toString(comArr) + "\n");
-		
-		// 게임 시작 시 스트라이크, 볼, 아웃 초기화 
+
+		// 게임 시작 시 스트라이크, 볼, 아웃 초기화
 		strike = 0;
 		ball = 0;
 		out = false;
@@ -64,12 +67,12 @@ public class BaseballServer implements Game {
 
 					// [SERVER -> CLIENT] : 스트라이크와 볼 정보 [strike 수, ball 수]
 					String result = decisionBall(comArr, userArr_);
-					writer.println("result&" + result);
+					writer.println("baseball@result&" + result);
 					writer.flush();
-					
-					// [SERVER -> CLIENT] : 홈런 여부 
+
+					// [SERVER -> CLIENT] : 홈런 여부
 					String homerunString = homerun(comArr, userArr_);
-					writer.println("homerunString&" + homerunString);
+					writer.println("baseball@homerunString&" + homerunString);
 					writer.flush();
 				}
 			} catch (Exception e) {
@@ -141,13 +144,13 @@ public class BaseballServer implements Game {
 		return numArr;
 	}
 
-	// 스트라이크, 볼, 아웃을 판단하는 메소드 
+	// 스트라이크, 볼, 아웃을 판단하는 메소드
 	public static String decisionBall(int[] comArr, int[] userArr) {
 		String result = "";
 		int strike = 0;
 		int ball = 0;
 		boolean out = true;
-		
+
 		for (int i = 0; i < comArr.length; i++) {
 			for (int j = 0; j < userArr.length; j++) {
 				// 숫자 일치
@@ -160,39 +163,36 @@ public class BaseballServer implements Game {
 				}
 			}
 		}
-		
+
 		System.out.println("[SERVER -> SERVER] : 스트라이크는 " + strike + ", 볼은 " + ball);
 		result = strike + "," + ball;
 		return result;
 	}
-	
+
 	// 홈런 여부를 판단하는 메소드
 	public static String homerun(int[] comArr, int[] userArr) {
 		String homerunString = "";
-		 String result = decisionBall(comArr, userArr);
-		    String[] parts = result.split(",");
-		    int strike = Integer.parseInt(parts[0]);
-	    if (strike == 3) {
-	        homerunString = "홈런";
-	    }
-	    return homerunString;
+		String result = decisionBall(comArr, userArr);
+		String[] parts = result.split(",");
+		int strike = Integer.parseInt(parts[0]);
+		if (strike == 3) {
+			homerunString = "홈런";
+		}
+		return homerunString;
 	}
 
-	public int getStrike()
-	{
-		return strike; 
+	public int getStrike() {
+		return strike;
 	}
 
-	public int getBall()
-	{
-		return ball; 
+	public int getBall() {
+		return ball;
 	}
 
-	public boolean getOut() 
-	{
+	public boolean getOut() {
 		if (strike == 0 && ball == 0)
-			return true; 
+			return true;
 		else
-			return false; 
+			return false;
 	}
 }

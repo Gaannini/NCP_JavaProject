@@ -115,6 +115,10 @@ public class GameClientGUI extends JFrame {
 	private ImageIcon baseballtxtIcon;
 	private JLabel baseballtxt;// 야구 text
 
+	MemoryGame memorygame;
+	OmokClient omokClient;
+	BaseballGame baseball;
+
 	// 생성자
 	public GameClientGUI() {
 		try {
@@ -160,12 +164,41 @@ public class GameClientGUI extends JFrame {
 				writer = new PrintWriter(socket.getOutputStream(), true);
 
 				while ((acceptchat = reader.readLine()) != null) {
-					chatreset(acceptchat);
+					String[] parsedMsg = acceptchat.split("@");
+					// chatreset(data);
+					// Client Thread에서 동작하는 프로토콜
+					handleProtocol(parsedMsg);
+					// 받은 클래스 이름을 실행하고 결과를 클라이언트에게 다시 전송
+
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+
+		private void handleProtocol(String[] parsedMsg) throws IOException {
+			if (parsedMsg.length >= 2) {
+				String protocol = parsedMsg[0];
+				String data = parsedMsg[1];
+
+				switch (protocol) {
+				case "chat":
+					chatreset(data);
+					break;
+				case "baseball":
+					// chatreset(data);
+					sendMsgToBaseballClient(data);
+					break;
+
+				}
+			}
+		}
+	}
+
+	// 메시지를 BaseballGame으로 전달하는 메소드
+	private void sendMsgToBaseballClient(String message) {
+		// baseball.sendMessageToClient(message);
+		baseball.parseHandleProtocol(message);
 	}
 
 	// 채팅 계속 리셋
@@ -492,7 +525,7 @@ public class GameClientGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				GameName = "memory";
 				sendSelectgame(GameName);
-				MemoryGame memorygame = new MemoryGame(socket);
+				memorygame = new MemoryGame(socket);
 			}
 		});
 
@@ -502,7 +535,7 @@ public class GameClientGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				GameName = "omok";
 				sendSelectgame(GameName);
-				OmokClient omokClient = new OmokClient(socket);
+				omokClient = new OmokClient(socket);
 			}
 		});
 
@@ -512,7 +545,7 @@ public class GameClientGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				GameName = "baseball";
 				sendSelectgame(GameName);
-				BaseballGame baseball = new BaseballGame(socket);
+				baseball = new BaseballGame(socket);
 			}
 		});
 	}

@@ -1,10 +1,27 @@
 package baseballGame;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.net.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class BaseballGame extends JFrame {
 	// 통신
@@ -76,9 +93,12 @@ public class BaseballGame extends JFrame {
 	private ImageIcon icon8;
 	private ImageIcon icon9;
 	private ImageIcon iconBack;
-	
-	// 홈런 여부 
+
+	// 홈런 여부
 	public String homeString;
+
+	// 메인클라이언트로부터 받은 메세지
+	String mainMsg;
 
 	// 이미지 아이콘 크기 조절 메소드
 	private ImageIcon ImageSetSize(ImageIcon icon, int width, int heigth) {
@@ -100,7 +120,7 @@ public class BaseballGame extends JFrame {
 		}
 	}
 
-	// 그리기 패널 클래스 
+	// 그리기 패널 클래스
 	class MarkingPanel extends JPanel {
 		private int strike = 0;
 		private int ball = 0;
@@ -198,8 +218,8 @@ public class BaseballGame extends JFrame {
 		batch();
 		listener();
 		setVisible(true);
-		
-	    setLocationRelativeTo(null);
+
+		setLocationRelativeTo(null);
 
 		this.socket = socket;
 		new ClientThread().start(); // 서버 연결 처리 스레드 시작
@@ -284,12 +304,13 @@ public class BaseballGame extends JFrame {
 					// 서버로부터 받은 메시지가 홈런인지 확인
 					String homerunString = data;
 					if ("홈런".equals(data)) {
-                        int choice = JOptionPane.showConfirmDialog(null, "홈런입니다! 게임을 종료하시겠습니까?", "홈런!", JOptionPane.YES_NO_OPTION);
-                        if (choice == JOptionPane.YES_OPTION) {
-                            // 사용자가 게임 종료를 선택하면 프로그램 종료
-                            System.exit(0);
-                        }
-                    }
+						int choice = JOptionPane.showConfirmDialog(null, "홈런입니다! 게임을 종료하시겠습니까?", "홈런!",
+								JOptionPane.YES_NO_OPTION);
+						if (choice == JOptionPane.YES_OPTION) {
+							// 사용자가 게임 종료를 선택하면 프로그램 종료
+							System.exit(0);
+						}
+					}
 					break;
 				}
 			}
@@ -578,5 +599,49 @@ public class BaseballGame extends JFrame {
 	private void addWrongGuess(String userArrString, int strike, int ball) {
 		String guessInfo = String.format("%s | STRIKE : %d, BALL : %d", userArrString, strike, ball);
 		wrongListModel.addElement(guessInfo);
+	}
+
+	public void sendMessageToClient(String message) {
+		mainMsg = message;
+	}
+
+	public void parseHandleProtocol(String serverMsg) {
+		String[] parsedMsg = serverMsg.split("&");
+		handleProtocol(parsedMsg);
+	}
+
+	// 프로토콜 처리: 받은 메시지를 프로토콜에 따라 처리
+	private void handleProtocol(String[] parsedMsg) {
+		if (parsedMsg.length >= 2) {
+			String protocol = parsedMsg[0];
+			String data = parsedMsg[1];
+
+			switch (protocol) {
+			case "result":
+				System.out.println("[SEVER -> CLIENT] 게임 결과 | 스트라이크,볼 : " + data);
+				// 서버로부터 받은 결과를 스트라이크와 볼의 개수로 파싱하여 panel1에 전달
+				String[] result = data.split(",");
+				int strike = Integer.parseInt(result[0]);
+				int ball = Integer.parseInt(result[1]);
+				boolean out = strike == 0 && ball == 0;
+				markingPanel.setData(strike, ball, out);
+				markingPanel.repaint();
+
+				addWrongGuess(userArrToString(), strike, ball);
+			case "homerunString":
+				System.out.println("[SERVER] -> [CLIENT] 홈런 여부 : " + data);
+				// 서버로부터 받은 메시지가 홈런인지 확인
+				String homerunString = data;
+				if ("홈런".equals(data)) {
+					int choice = JOptionPane.showConfirmDialog(null, "홈런입니다! 게임을 종료하시겠습니까?", "홈런!",
+							JOptionPane.YES_NO_OPTION);
+					if (choice == JOptionPane.YES_OPTION) {
+						// 사용자가 게임 종료를 선택하면 프로그램 종료
+						System.exit(0);
+					}
+				}
+				break;
+			}
+		}
 	}
 }
