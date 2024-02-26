@@ -1,3 +1,13 @@
+/**
+ * 고쳐야 할 점 
+ * [1] 두번째 입력부터 입력(inputButton)버튼 두번 눌러야 작동
+ * [2] 다시하기도 두번 눌러야 제대로 작동(SERVER 콘솔에서 확인할 수 있음)
+ *     한번 누르면 난수가 생성되지만, 000이 들어가기 때문에 한번 더 눌러야 함
+ * 추가할 점
+ * [1] 입력(inputButton)을 누르고 나면 유저 숫자(userArr)가 초기화 되면서 
+ *     유저 숫자가 뜨는 라벨(userArrLabel)도 초기화가 돼서 아무것도 안보이게 해야함
+ *     --> 임시로, backButton을 3번 누르면서 게임을 진행하고 있음 
+ */
 package baseballGame;
 
 import javax.swing.*;
@@ -6,8 +16,6 @@ import java.awt.event.*;
 import java.io.*;
 import java.net.*;
 import java.util.Arrays;
-
-import javax.swing.border.LineBorder;
 
 public class BaseballGame extends JFrame {
 	// 통신
@@ -320,12 +328,13 @@ public class BaseballGame extends JFrame {
 					// 서버로부터 받은 메시지가 홈런인지 확인
 					String homerunString = data;
 					if ("홈런".equals(data)) {
-						int choice = JOptionPane.showConfirmDialog(null, "홈런입니다! 게임을 종료하시겠습니까?", "홈런!",
+						int choice = JOptionPane.showConfirmDialog(null, "홈런입니다! 게임을 종료하시겠습니까?", "알림",
 								JOptionPane.YES_NO_OPTION);
 						if (choice == JOptionPane.YES_OPTION) {
-							// 사용자가 게임 종료를 선택하면 프로그램 종료
 							System.exit(0);
 						}
+						System.out.println("[CLIENT -> CLIENT] : 라운드 종료");
+						System.out.println("########################################");
 					}
 					break;
 				}
@@ -424,8 +433,11 @@ public class BaseballGame extends JFrame {
 		wrongPanel.setVisible(true);
 		wrongPanel.setBounds(285, 200, 285, 472);
 
+		inputButton.setVisible(true);
 		inputButton.setBounds(480, 674, 120, 29);
+		replayButton.setVisible(true);
 		replayButton.setBounds(365, 674, 120, 29);
+		manualButton.setVisible(true);
 		manualButton.setBounds(250, 674, 120, 29);
 
 		keyboardPanel.setVisible(true);
@@ -499,8 +511,6 @@ public class BaseballGame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new ClientThread().sendUserArr(userArr);
-				Arrays.fill(userArr, 0);
-				updateUserArrLabel();
 			}
 		});
 		replayButton.addActionListener(new ActionListener() {
@@ -605,13 +615,15 @@ public class BaseballGame extends JFrame {
 		});
 	}
 
-//	protected void sendRestart() {
-//		// TODO Auto-generated method stub
-//
-//	}
-
 	// 숫자 버튼 클릭 시 배열에 추가하는 메소드
 	private void addUserInput(int number) {
+		for (int i = 0; i < userArr.length; i++) {
+	        if (userArr[i] == number) {
+	            // 중복 숫자 -> 추가 안함 
+	            return;
+	        }
+	    }
+		
 		for (int i = 0; i < userArr.length; i++) {
 			if (userArr[i] == 0) {
 				userArr[i] = number;
@@ -660,10 +672,12 @@ public class BaseballGame extends JFrame {
 		// 오답 리스트의 크기 확인
 		if (wrongListModel.size() >= 9) {
 			// 게임에서 졌다는 다이얼로그 생성
-			JOptionPane.showMessageDialog(null, "게임에서 졌습니다!", "알림", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, "홈런은 다음 기회에 ㅠㅠ", "알림", JOptionPane.INFORMATION_MESSAGE);
 			// 게임 재시작을 위한 초기화
 			new ClientThread().sendRestart();
 			resetLocalGame();
+			System.out.println("[CLIENT -> CLIENT] : 라운드 종료");
+			System.out.println("########################################");
 		}
 	}
 

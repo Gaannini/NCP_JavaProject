@@ -66,9 +66,10 @@ public class BaseballServer implements Game {
 					handleProtocol(parsedMsg);
 
 					// [SERVER -> CLIENT] : 스트라이크와 볼 정보 [strike 수, ball 수]
-					String result = decisionBall(comArr, userArr_);
-					writer.println("result&" + result);
+					int[] result = decisionBall(comArr, userArr_);
+					writer.println("result&" + result[0] + "," + result[1]);
 					writer.flush();
+					System.out.println("[SERVER -> SERVER] : 스트라이크는 " + result[0] + ", 볼은 " + result[1]);
 
 					// [SERVER -> CLIENT] : 홈런 여부
 					String homerunString = homerun(comArr, userArr_);
@@ -112,6 +113,7 @@ public class BaseballServer implements Game {
 					break;
 				case "replay":
 					if ("다시".equals(data)) {
+						System.out.println("[CLIENT -> SERVER] 다시하기");
 						resetGame();
 					}
 					break;
@@ -161,8 +163,8 @@ public class BaseballServer implements Game {
 	}
 
 	// 스트라이크, 볼, 아웃을 판단하는 메소드
-	public static String decisionBall(int[] comArr, int[] userArr) {
-		String result = "";
+	public static int[] decisionBall(int[] comArr, int[] userArr) {
+		int[] result = new int[2];
 		int strike = 0;
 		int ball = 0;
 		boolean out = true;
@@ -179,21 +181,24 @@ public class BaseballServer implements Game {
 				}
 			}
 		}
-		System.out.println("[SERVER -> SERVER] : 스트라이크는 " + strike + ", 볼은 " + ball);
-		result = strike + "," + ball;
-		return result;
+		result[0] = strike; 
+	    result[1] = ball;  
+	    return result;
 	}
 
 	// 홈런 여부를 판단하는 메소드
 	public static String homerun(int[] comArr, int[] userArr) {
 		String homerunString = "";
-		String result = decisionBall(comArr, userArr);
-		String[] parts = result.split(",");
-		int strike = Integer.parseInt(parts[0]);
-		if (strike == 3) {
-			homerunString = "홈런";
-		}
-		return homerunString;
+	    int[] result = decisionBall(comArr, userArr);
+	    int strike = result[0]; 
+
+	    if (strike == 3) {
+	        homerunString = "홈런";
+	        System.out.println("[SERVER -> SERVER] : !!!홈런!!!");
+	        System.out.println("[SERVER -> SERVER] : 라운드 종료");
+	        System.out.println("########################################");
+	    }
+	    return homerunString;
 	}
 
 	public int getStrike() {
