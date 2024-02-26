@@ -78,13 +78,10 @@ public class GameServer {
 					System.out.println("clientMsg=" + clientMsg);
 					String[] parsedMsg = clientMsg.split("&");
 					// Client Thread에서 동작하는 프로토콜
-					System.out.println("handleProtocol 처리 전");
 					handleProtocol(parsedMsg);
-					System.out.println("handleProtocol 처리 후");
 					// 받은 클래스 이름을 실행하고 결과를 클라이언트에게 다시 전송
 					PrintWriter out = new PrintWriter(clientsocket.getOutputStream());
 					out.println("서버에서 실행된 결과");
-					System.out.println("out.println 처리 후");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
