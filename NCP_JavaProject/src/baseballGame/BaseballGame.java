@@ -1,13 +1,40 @@
+/**
+ * 고쳐야 할 점 
+ * [1] 두번째 입력부터 입력(inputButton)버튼 두번 눌러야 작동
+ * [2] 다시하기도 세번 눌러야 제대로 작동(SERVER 콘솔에서 확인할 수 있음)
+ *     두번 누르면 난수가 생성되지만, 000이 들어가기 때문에 한번 더 눌러야 함
+ * 추가할 점
+ * [1] 입력(inputButton)을 누르고 나면 유저 숫자(userArr)가 초기화 되면서 
+ *     유저 숫자가 뜨는 라벨(userArrLabel)도 초기화가 돼서 아무것도 안보이게 해야함
+ *     --> 임시로, backButton(숫자 9 버튼 옆에 있는 지우개버튼)을 3번 누르면서 게임을 진행하고 있음 
+ */
 package baseballGame;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.net.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.Arrays;
 
-import javax.swing.border.LineBorder;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import Server.Game;
 
@@ -99,6 +126,9 @@ public class BaseballGame extends JFrame{
 	// 홈런 여부
 	public String homeString;
 
+	// 메인클라이언트로부터 받은 메세지
+	String mainMsg;
+
 	// 이미지 아이콘 크기 조절 메소드
 	private ImageIcon ImageSetSize(ImageIcon icon, int width, int heigth) {
 		Image xImage = icon.getImage();
@@ -120,7 +150,7 @@ public class BaseballGame extends JFrame{
 	}
 
 	class ManualPanel extends JPanel {
-		private ImageIcon icon = new ImageIcon(getClass().getResource("/baseballGame/imgs/manual.png"));
+		private ImageIcon icon = new ImageIcon(getClass().getResource("/baseballGame/imgs/gameManual.png"));
 		private Image imgMain = icon.getImage();
 
 		@Override
@@ -320,14 +350,14 @@ public class BaseballGame extends JFrame{
 				case "homerunString":
 					System.out.println("[SERVER] -> [CLIENT] 홈런 여부 : " + data);
 					// 서버로부터 받은 메시지가 홈런인지 확인
-					String homerunString = data;
 					if ("홈런".equals(data)) {
-						int choice = JOptionPane.showConfirmDialog(null, "홈런입니다! 게임을 종료하시겠습니까?", "홈런!",
+						int choice = JOptionPane.showConfirmDialog(null, "홈런입니다! 게임을 종료하시겠습니까?", "알림",
 								JOptionPane.YES_NO_OPTION);
 						if (choice == JOptionPane.YES_OPTION) {
-							// 사용자가 게임 종료를 선택하면 프로그램 종료
 							System.exit(0);
 						}
+						System.out.println("[CLIENT -> CLIENT] : 라운드 종료");
+						System.out.println("########################################");
 					}
 					break;
 				}
@@ -426,8 +456,11 @@ public class BaseballGame extends JFrame{
 		wrongPanel.setVisible(true);
 		wrongPanel.setBounds(285, 200, 285, 472);
 
+		inputButton.setVisible(true);
 		inputButton.setBounds(480, 674, 120, 29);
+		replayButton.setVisible(true);
 		replayButton.setBounds(365, 674, 120, 29);
+		manualButton.setVisible(true);
 		manualButton.setBounds(250, 674, 120, 29);
 
 		keyboardPanel.setVisible(true);
@@ -496,15 +529,14 @@ public class BaseballGame extends JFrame{
 	}
 
 	private void listener() {
-		// TODO : 버튼 고쳐야 함 (두번 눌러야 서버에 전송됨, 클릭시 초기화도 해야 함)
+		// TODO : 고쳐야대
 		inputButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new ClientThread().sendUserArr(userArr);
-				Arrays.fill(userArr, 0);
-				updateUserArrLabel();
 			}
 		});
+		// TODO : 고쳐야대
 		replayButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -607,13 +639,15 @@ public class BaseballGame extends JFrame{
 		});
 	}
 
-//	protected void sendRestart() {
-//		// TODO Auto-generated method stub
-//
-//	}
-
 	// 숫자 버튼 클릭 시 배열에 추가하는 메소드
 	private void addUserInput(int number) {
+		for (int i = 0; i < userArr.length; i++) {
+			if (userArr[i] == number) {
+				// 중복 숫자 -> 추가 안함
+				return;
+			}
+		}
+
 		for (int i = 0; i < userArr.length; i++) {
 			if (userArr[i] == 0) {
 				userArr[i] = number;
@@ -649,6 +683,7 @@ public class BaseballGame extends JFrame{
 		wrongList.setValueIsAdjusting(true);
 		wrongList.setSize(260, 330);
 		wrongList.setLocation(300, 120);
+
 		// 리스트 가운데 정렬 설정
 		DefaultListCellRenderer renderer = (DefaultListCellRenderer) wrongList.getCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -661,11 +696,13 @@ public class BaseballGame extends JFrame{
 
 		// 오답 리스트의 크기 확인
 		if (wrongListModel.size() >= 9) {
-			// 게임에서 졌다는 다이얼로그 생성
-			JOptionPane.showMessageDialog(null, "게임에서 졌습니다!", "알림", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, "홈런은 다음 기회에 ㅠㅠ", "알림", JOptionPane.INFORMATION_MESSAGE);
+
 			// 게임 재시작을 위한 초기화
 			new ClientThread().sendRestart();
 			resetLocalGame();
+			System.out.println("[CLIENT -> CLIENT] : 라운드 종료");
+			System.out.println("########################################");
 		}
 	}
 
@@ -677,5 +714,47 @@ public class BaseballGame extends JFrame{
 		markingPanel.repaint();
 	}
 
-	
+	public void sendMessageToClient(String message) {
+		mainMsg = message;
+	}
+
+	public void parseHandleProtocol(String serverMsg) {
+		String[] parsedMsg = serverMsg.split("&");
+		handleProtocol(parsedMsg);
+	}
+
+	// 프로토콜 처리: 받은 메시지를 프로토콜에 따라 처리
+	private void handleProtocol(String[] parsedMsg) {
+		if (parsedMsg.length >= 2) {
+			String protocol = parsedMsg[0];
+			String data = parsedMsg[1];
+
+			switch (protocol) {
+			case "result":
+				System.out.println("[SEVER -> CLIENT] 게임 결과 | 스트라이크,볼 : " + data);
+				// 서버로부터 받은 결과를 스트라이크와 볼의 개수로 파싱하여 panel1에 전달
+				String[] result = data.split(",");
+				int strike = Integer.parseInt(result[0]);
+				int ball = Integer.parseInt(result[1]);
+				boolean out = strike == 0 && ball == 0;
+				markingPanel.setData(strike, ball, out);
+				markingPanel.repaint();
+
+				addWrongGuess(userArrToString(), strike, ball);
+			case "homerunString":
+				System.out.println("[SERVER] -> [CLIENT] 홈런 여부 : " + data);
+				// 서버로부터 받은 메시지가 홈런인지 확인
+				String homerunString = data;
+				if ("홈런".equals(data)) {
+					int choice = JOptionPane.showConfirmDialog(null, "홈런입니다! 게임을 종료하시겠습니까?", "홈런!",
+							JOptionPane.YES_NO_OPTION);
+					if (choice == JOptionPane.YES_OPTION) {
+						// 사용자가 게임 종료를 선택하면 프로그램 종료
+						System.exit(0);
+					}
+				}
+				break;
+			}
+		}
+	}
 }

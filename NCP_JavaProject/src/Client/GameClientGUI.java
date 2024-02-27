@@ -7,9 +7,12 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
@@ -80,6 +83,10 @@ public class GameClientGUI extends JFrame {
 	private ImageIcon baseballtxtIcon;
 	private JLabel baseballtxt;// 야구 text
 
+	MemoryGame memorygame;
+	OmokClient omokClient;
+	BaseballGame baseball;
+
 	// 생성자
 	public GameClientGUI() {
 		try {
@@ -95,6 +102,95 @@ public class GameClientGUI extends JFrame {
 		setting(); // 세팅 메서드 호출
 		listener(); // 리스너 메서드 호출
 		setVisible(true);
+
+		// 창 닫을 때 이벤트 처리 추가
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				super.windowClosing(e);
+				sendExitMsg();
+				disconnectServer(); // 서버와의 연결 끊기
+			}
+		});
+	}
+
+	// 서버에서 메세지 받기위한 스레드
+	public class clientInfo extends Thread {
+		private Socket socket;
+		private BufferedReader reader;
+		public String clientId;
+		public String gamename;
+
+		public clientInfo(Socket socket) {
+			this.socket = socket;
+		}
+
+		@Override
+		public void run() {
+			try {
+				reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				writer = new PrintWriter(socket.getOutputStream(), true);
+
+				while ((acceptchat = reader.readLine()) != null) {
+					String[] parsedMsg = acceptchat.split("@");
+					// chatreset(data);
+					// Client Thread에서 동작하는 프로토콜
+					handleProtocol(parsedMsg);
+					// 받은 클래스 이름을 실행하고 결과를 클라이언트에게 다시 전송
+
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		private void handleProtocol(String[] parsedMsg) throws IOException {
+			if (parsedMsg.length >= 2) {
+				String protocol = parsedMsg[0];
+				String data = parsedMsg[1];
+
+				switch (protocol) {
+				case "chat":
+					chatreset(data);
+					break;
+				case "baseball":
+					// chatreset(data);
+					sendMsgToBaseballClient(data);
+					break;
+
+				}
+			}
+		}
+	}
+
+	// 메시지를 BaseballGame으로 전달하는 메소드
+	private void sendMsgToBaseballClient(String message) {
+		// baseball.sendMessageToClient(message);
+		baseball.parseHandleProtocol(message);
+	}
+
+	// 채팅 계속 리셋
+	private void chatreset(String chatmsg) {
+		if (num < 19) {
+			// 기존 메시지를 한 칸씩 뒤로 옮기기
+			for (int i = num; i > 0; i--) {
+				JLabel prevLabel = chatLabels.get(i - 1);
+				JLabel currentLabel = chatLabels.get(i);
+				currentLabel.setText(prevLabel.getText()); // 이전 라벨의 텍스트를 현재 라벨로 이동
+			}
+			// 새로운 메시지를 첫 번째 채팅 라벨에 설정
+			chatLabels.get(0).setText(chatmsg);
+			num++;
+		} else {
+			// 마지막 채팅 라벨의 메시지를 지우고 새로운 메시지를 첫 번째 채팅 라벨에 설정
+			for (int i = 18; i > 0; i--) {
+				JLabel prevLabel = chatLabels.get(i - 1);
+				JLabel currentLabel = chatLabels.get(i);
+				currentLabel.setText(prevLabel.getText()); // 이전 라벨의 텍스트를 현재 라벨로 이동
+			}
+			chatLabels.get(0).setText(chatmsg);
+			num = 0; // num 값 초기화
+		}
 	}
 
 	// 생성
@@ -256,9 +352,13 @@ public class GameClientGUI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				GameName = "memory";
+
 //				sendSelectgame(GameName);
 
 				MemoryGame.main(null);
+
+				sendSelectgame(GameName);
+				memorygame = new MemoryGame(socket);
 			}
 		});
 
@@ -269,6 +369,7 @@ public class GameClientGUI extends JFrame {
 				GameName = "omok";
 				sendSelectgame(GameName);
 				OmokClient omok = new OmokClient(socket);
+
 			}
 		});
 
@@ -278,7 +379,7 @@ public class GameClientGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				GameName = "baseball";
 				sendSelectgame(GameName);
-				BaseballGame baseball = new BaseballGame(socket);
+				baseball = new BaseballGame(socket);
 			}
 		});
 	}

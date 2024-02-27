@@ -6,8 +6,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -17,7 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 public class MemoryGame extends JFrame implements ActionListener {
-	private Socket socket;
+	private static Socket socket;
 	private final int BOARD_SIZE = 4; // 보드 크기
 	private final int CARD_SIZE = 100; // 카드 크기
 	private List<ImageIcon> symbols; // 카드에 표시될 이미지 목록
@@ -25,13 +27,15 @@ public class MemoryGame extends JFrame implements ActionListener {
 	private CardButton firstCard; // 첫 번째 선택한 카드
 	private CardButton secondCard; // 두 번째 선택한 카드
 	private long startTime; // 게임 시작 시간
-	private DataOutputStream outputStream;
+	private PrintWriter out;
+	
+	double seconds;//결과저장
 
 	public MemoryGame() {
-		setTitle("Memory Game");
+		setTitle("Memory Game");	// JFrame 창의 이름 설정
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(BOARD_SIZE * CARD_SIZE, BOARD_SIZE * CARD_SIZE);
-		setLayout(new GridLayout(BOARD_SIZE, BOARD_SIZE));
+		setSize(BOARD_SIZE * CARD_SIZE, BOARD_SIZE * CARD_SIZE);	// (행, 열) 설정
+		setLayout(new GridLayout(BOARD_SIZE, BOARD_SIZE));	// 격자 모양의 그리드 크기 설정
 
 		symbols = generateSymbols();
 		buttons = new ArrayList<>();
@@ -43,30 +47,33 @@ public class MemoryGame extends JFrame implements ActionListener {
 			buttons.add(button);
 			add(button);
 		}
-		try {
-		    socket = new Socket("127.0.0.1", 12345);
-		    outputStream = new DataOutputStream(socket.getOutputStream());
-		} catch (IOException e) {
-		    e.printStackTrace();
-		}
-		
 		
 		startGame();
 	}
 
 	public MemoryGame(Socket socket) {
+		this.socket = socket;
 		main(null);
 	}
 
 	// 이미지 목록 생성
 	private List<ImageIcon> generateSymbols() {
+	
 		List<ImageIcon> symbols = new ArrayList<>();
 		for (int i = 1; i <= (BOARD_SIZE * BOARD_SIZE) / 2; i++) {
 			ImageIcon image = new ImageIcon("memoryimage/image" + i + ".png"); // 이미지 경로에 맞게 수정
 			symbols.add(image);
 			symbols.add(image); // 두 번씩 추가하여 쌍을 이룸
+		
+//	private ImageIcon[] generateSymbols() {
+//		ImageIcon[] symbols = new ImageIcon[(BOARD_SIZE * BOARD_SIZE)];
+//		for (int i = 0; i < symbols.length / 2; i++) {
+//			ImageIcon image = new ImageIcon("memoryimage/image" + (i + 1) + ".png"); // 이미지 경로에 맞게 수정
+//			symbols[i] = image;
+//			symbols[i + symbols.length / 2] = image; // 쌍을 이룸
 		}
-//		Collections.shuffle(symbols);
+		
+		Collections.shuffle(symbols);
 		return symbols;
 	}
 
@@ -127,20 +134,23 @@ public class MemoryGame extends JFrame implements ActionListener {
 		if (allMatched) {
 			long endTime = System.currentTimeMillis(); // 게임 종료 시간 기록
 			long elapsedTime = endTime - startTime; // 소요된 시간 계산
-			double seconds = elapsedTime / 1000.0; // 밀리초를 초로 변환
+			seconds = elapsedTime / 1000.0; // 밀리초를 초로 변환
+			//Object[] options = {"확인", "취소"};
 			JOptionPane.showMessageDialog(this, "와~~ " + seconds + " 초 걸렸습니다! 짝짝짝..");
 
-			// 결과를 서버에 보냄
+			 //결과를 서버에 보냄
 			sendResultToServer(seconds);
 
 			dispose();
 		}
 	}
 
+	//게임결과를 서버로 보냄
 	private void sendResultToServer(double seconds) {
 		try {
-			// 결과를 서버에 전송
-			outputStream.writeUTF("게임 결과: " + seconds + " 초 걸렸습니다.");
+			out = new PrintWriter(socket.getOutputStream(), true);
+			out.println("게임 결과&" + seconds + " 초 걸렸습니다.");
+			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

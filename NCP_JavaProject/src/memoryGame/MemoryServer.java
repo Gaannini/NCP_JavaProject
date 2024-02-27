@@ -14,9 +14,7 @@ public class MemoryServer implements Game {
 
 	@Override
 	public void start(Socket socket) {
-		System.out.println("메모리 서버가 시작되었습니다.");
-		System.out.println("게임 시작");
-
+		
 		this.socket = socket;
 		new SeverThread(socket).start(); // 클라이언트 연결 처리 스레드 시작
 	}
@@ -29,8 +27,8 @@ public class MemoryServer implements Game {
 			this.socket = socket;
 		}
 
-//        private String memoryMsg; // 클라이언트 메시지를 저장하는 변수
-//        private String gamename; // 선택한 게임 이름을 저장하는 변수
+        private String memoryMsg; // 클라이언트 메시지를 저장하는 변수
+        private String gamename; // 선택한 게임 이름을 저장하는 변수
 
 		@Override
 		public void run() {
@@ -38,12 +36,15 @@ public class MemoryServer implements Game {
 				// 통신 스트림 설정
 				reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				writer = new PrintWriter(socket.getOutputStream(), true);
+				
+				BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+	            String writeUTF = reader.readLine();
 
 				String clientMsg;
 				while ((clientMsg = reader.readLine()) != null) {
 					String[] parsedMsg = clientMsg.split("&");
 					handleProtocol(parsedMsg);
-
+					
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
