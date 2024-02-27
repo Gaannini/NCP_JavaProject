@@ -169,27 +169,24 @@ public class GameClientGUI extends JFrame {
 		baseball.parseHandleProtocol(message);
 	}
 
-	// 채팅 계속 리셋
 	private void chatreset(String chatmsg) {
-		if (num < 19) {
-			// 기존 메시지를 한 칸씩 뒤로 옮기기
-			for (int i = num; i > 0; i--) {
-				JLabel prevLabel = chatLabels.get(i - 1);
-				JLabel currentLabel = chatLabels.get(i);
-				currentLabel.setText(prevLabel.getText()); // 이전 라벨의 텍스트를 현재 라벨로 이동
-			}
-			// 새로운 메시지를 첫 번째 채팅 라벨에 설정
-			chatLabels.get(0).setText(chatmsg);
-			num++;
-		} else {
-			// 마지막 채팅 라벨의 메시지를 지우고 새로운 메시지를 첫 번째 채팅 라벨에 설정
-			for (int i = 18; i > 0; i--) {
-				JLabel prevLabel = chatLabels.get(i - 1);
-				JLabel currentLabel = chatLabels.get(i);
-				currentLabel.setText(prevLabel.getText()); // 이전 라벨의 텍스트를 현재 라벨로 이동
-			}
-			chatLabels.get(0).setText(chatmsg);
-			num = 0; // num 값 초기화
+		// 기존 메시지를 한 칸씩 뒤로 옮기기
+		for (int i = num; i > 0; i--) {
+			JLabel prevLabel = chatLabels.get(i - 1);
+			JLabel currentLabel = chatLabels.get(i);
+			currentLabel.setText(prevLabel.getText()); // 이전 라벨의 텍스트를 현재 라벨로 이동
+		}
+
+		// 새로운 메시지를 첫 번째 채팅 라벨에 설정
+		chatLabels.get(0).setText(chatmsg);
+
+		// num 값 갱신
+		num = Math.min(num + 1, 19); // num 값을 최대 19까지 유지
+
+		// 만약 num이 19를 초과하면 마지막 채팅 라벨의 메시지를 지우고 num을 18로 설정
+		if (num == 19) {
+			chatLabels.get(18).setText(""); // 19번째 라벨의 텍스트를 지움
+			num = 18; // num 값을 18로 설정
 		}
 	}
 
